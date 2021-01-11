@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet("bit")]
 pub trait Monoid {
     type Item: std::fmt::Debug + Clone;
     fn id() -> Self::Item;
@@ -5,10 +8,12 @@ pub trait Monoid {
     fn sub(a: &Self::Item, b: &Self::Item) -> Self::Item;
 }
 
+#[snippet("bit")]
 pub struct BIT<M: Monoid> {
     data: Vec<M::Item>,
 }
 
+#[snippet("bit")]
 impl<M: Monoid> BIT<M> {
     pub fn new() -> Self {
         Self {

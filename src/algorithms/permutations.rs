@@ -1,10 +1,14 @@
+use cargo_snippet::snippet;
+
 /// 順列を生成する構造体
+#[snippet("enumerate_permutation")]
 pub struct Permutation<T: Clone> {
     v: Vec<T>,
     l: Vec<usize>,
     not_start: bool,
 }
 
+#[snippet("enumerate_permutation")]
 impl<T: Clone> Permutation<T> {
     /// 順列生成をする構造体の初期化
     pub fn new(v: &Vec<T>) -> Permutation<T> {
@@ -16,6 +20,7 @@ impl<T: Clone> Permutation<T> {
     }
 }
 
+#[snippet("enumerate_permutation")]
 impl<T: Clone> Iterator for Permutation<T> {
     type Item = Vec<T>;
     fn next(&mut self) -> Option<Vec<T>> {
@@ -41,10 +46,12 @@ impl<T: Clone> Iterator for Permutation<T> {
     }
 }
 
+#[snippet("enumerate_permutation")]
 pub trait PermutationWithIterator<T: Clone> {
     fn permutations(&mut self) -> Permutation<T>;
 }
 
+#[snippet("enumerate_permutation")]
 impl<I> PermutationWithIterator<I::Item> for I
 where
     I: Iterator,
@@ -57,6 +64,7 @@ where
 }
 
 /// 組み合わせ全列挙
+#[snippet("enumerate_combination")]
 pub fn comb(n: usize, k: usize) -> Vec<Vec<usize>> {
     let mut it = Vec::new();
     let mut c = (1 << k) - 1;

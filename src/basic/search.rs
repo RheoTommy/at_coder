@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet("search_util")]
 pub fn around((i, j): (usize, usize), h: usize, w: usize) -> Vec<(usize, usize)> {
     let (i, j) = (i as isize, j as isize);
     vec![
@@ -16,6 +19,7 @@ pub fn around((i, j): (usize, usize), h: usize, w: usize) -> Vec<(usize, usize)>
     .collect::<Vec<_>>()
 }
 
+#[snippet("search_util")]
 pub fn next((i, j): (usize, usize), h: usize, w: usize) -> Vec<(usize, usize)> {
     let (i, j) = (i as isize, j as isize);
     vec![(i - 1, j), (i, j - 1), (i, j + 1), (i + 1, j)]

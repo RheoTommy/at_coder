@@ -3,10 +3,9 @@
 #![allow(unused_imports)]
 
 use std::io::{stdout, BufWriter, Write};
-use std::{collections::*, vec};
+use std::{collections::*, fmt::format};
 
 use itertools::Itertools;
-use num::PrimInt;
 
 use crate::lib::Scanner;
 
@@ -17,68 +16,50 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let m = sc.next_usize();
-    let mut edges = HashSet::new();
-    for _ in 0..m {
-        let a = sc.next_usize() - 1;
-        let b = sc.next_usize() - 1;
-        edges.insert((a, b));
-        edges.insert((b, a));
+    let x = sc.next_usize() as u128;
+    let y = sc.next_usize() as u128;
+
+    if x >= y {
+        writeln!(writer, "{}", x - y).unwrap();
+        writer.flush().unwrap();
+        std::process::exit(0);
     }
 
-    let mut dp = vec![false; 1 << n];
-    for i in 0..n {
-        dp[1 << i] = true;
-    }
+    let mut ans = U_INF;
 
-    for state in 0..1 << n {
-        if !dp[state] {
-            continue;
-        }
+    // 2倍する回数全探索
+    for z in 0..=100 {
+        let made = x * 2u128.pow(z);
+        let diff = if made > y { made - y } else { y - made };
 
-        'outer: for i in 0..n {
-            if (state >> i) & 1 == 1 {
-                continue;
-            }
+        let k = z.min(format!("{:b}", diff).len() as u32);
+        eprintln!("{:?}", k);
+        let mut l = U_INF;
 
-            for j in 0..n {
-                if (state >> j) & 1 == 1 && !edges.contains(&(i, j)) {
-                    continue 'outer;
+        for bit in 0..3u128.pow(k) {
+            let mut acc = 0;
+            let mut count = 0;
+            for i in 0..k {
+                let b = (bit / 3u128.pow(i)) % 3;
+                if b == 1 {
+                    acc += 2i128.pow(i);
+                    count += 1;
+                } else if b == 2 {
+                    acc -= 2i128.pow(i);
+                    count += 1;
                 }
             }
-            dp[state | 1 << i] = true;
+            if diff == acc as u128 {
+                l = l.min(count);
+            }
         }
+
+        ans = ans.min(z as usize + l);
     }
 
-    let mut memo = vec![U_INF; 1 << n];
-    memo[0] = 0;
+    writeln!(writer, "{}", ans).unwrap();
 
-    for state in 0..1 << n {
-        if dp[state] {
-            memo[state] = 1;
-        }
-    }
-
-    let mut dp = memo;
-
-    for state in 0..1 << n {
-        let mut t = state;
-        while t > 0 {
-            dp[state] = dp[state].min(dp[state ^ t] + dp[t]);
-            t = (t - 1) & state;
-        }
-    }
-
-    writeln!(writer, "{}", dp[(1 << n) - 1]).unwrap();
-}
-
-fn rec(state: usize, n: usize, memo: &mut HashMap<usize, usize>) -> usize {
-    if memo.contains_key(&state) {
-        return memo[&state];
-    }
-
-    0
+    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod lib {

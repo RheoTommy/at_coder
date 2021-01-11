@@ -3,7 +3,7 @@
 #![allow(unused_imports)]
 
 use std::collections::*;
-use std::io::{BufWriter, stdout, Write};
+use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
 
@@ -16,7 +16,10 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    writeln!(writer, "{}", -1).unwrap();
+    let x = sc.next_usize();
+    let y = sc.next_usize();
+    let ans = if x.min(y) + 3 > x.max(y) { "Yes" } else { "No" };
+    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod lib {

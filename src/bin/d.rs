@@ -6,6 +6,7 @@ use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
+use lib::coord_comp;
 
 use crate::lib::Scanner;
 
@@ -17,30 +18,58 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let cities = (0..n)
-        .map(|_| (sc.next_usize(), sc.next_usize()))
-        .collect::<Vec<_>>();
-    let enemy_sum = cities.clone().into_iter().map(|(a, _)| a).sum::<usize>();
-    let cities = cities
-        .into_iter()
-        .map(|(a, b)| a * 2 + b)
-        .sorted()
-        .rev()
-        .collect::<Vec<_>>();
-    eprintln!("{:?}", enemy_sum);
-    eprintln!("{:?}", cities);
-    let mut acc = 0;
-    for i in 0..n {
-        acc += cities[i];
-        if acc > enemy_sum {
-            writeln!(writer, "{}", i + 1).unwrap();
-            writer.flush().unwrap();
-            std::process::exit(0);
+    let c = sc.next_usize();
+    let mut coord = Vec::new();
+    let mut services = Vec::new();
+    for _ in 0..n {
+        let a = sc.next_usize();
+        let b = sc.next_usize() + 1;
+        let c = sc.next_usize();
+        coord.push(a);
+        coord.push(b);
+        services.push((a, b, c));
+    }
+    let (zipped, index) = coord_comp(&coord);
+    let mut imos = vec![0isize; zipped.len() + 10];
+    for &(a, b, c) in &services {
+        imos[index[&a]] += c as isize;
+        imos[index[&b]] -= c as isize;
+    }
+    for i in 1..imos.len() {
+        imos[i] += imos[i - 1];
+    }
+
+    // eprintln!("{:?}", imos);
+
+    let mut ans = 0;
+    for i in 0..zipped.len() - 1 {
+        if imos[i] > c as isize {
+            ans += (zipped[i + 1] - zipped[i]) * c;
+        } else {
+            ans += imos[i] as usize * (zipped[i + 1] - zipped[i]);
         }
     }
+    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod lib {
+    pub fn coord_comp<
+        T: std::hash::Hash + Clone + std::cmp::Ord + std::cmp::PartialEq + std::cmp::Eq,
+    >(
+        v: &[T],
+    ) -> (Vec<T>, std::collections::HashMap<T, usize>) {
+        let mut v = v.iter().collect::<Vec<_>>();
+        v.sort();
+        v.dedup();
+        let mut res = std::collections::HashMap::new();
+        let mut zip = Vec::with_capacity(v.len());
+        for (i, vi) in v.into_iter().enumerate() {
+            zip.push(vi.clone());
+            res.insert(vi.clone(), i);
+        }
+        (zip, res)
+    }
+
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
     }

@@ -45,7 +45,7 @@ impl Scanner {
         self.next()
     }
 
-    pub fn next_isize(&mut self) -> isize {
+    pub fn next_i128(&mut self) -> i128 {
         self.next()
     }
 

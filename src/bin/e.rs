@@ -17,67 +17,28 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
+    let m = sc.next_usize();
+    let a = (0..n).map(|_| sc.next_isize()).collect::<Vec<_>>();
     let mut vertexes = vec![vec![]; n];
-    let mut edges = vec![];
-    for _ in 0..n - 1 {
-        let a = sc.next_usize() - 1;
-        let b = sc.next_usize() - 1;
-        edges.push((a, b));
-        vertexes[a].push(b);
-        vertexes[b].push(a);
+    for _ in 0..m {
+        let x = sc.next_usize() - 1;
+        let y = sc.next_usize() - 1;
+        vertexes[x].push(y);
     }
 
-    let mut seen = vec![false; n];
-    let mut depth = vec![0; n];
-    let mut children = vec![vec![]; n];
-    let mut queue = VecDeque::new();
-    queue.push_back(0);
-    seen[0] = true;
-    while let Some(p) = queue.pop_front() {
-        for &c in &vertexes[p] {
-            if !seen[c] {
-                children[p].push(c);
-                depth[c] = depth[p] + 1;
-                seen[c] = true;
-                queue.push_back(c);
-            }
-        }
-    }
-
-    let mut dp = vec![0; n];
-    let q = sc.next_usize();
-    for _ in 0..q {
-        let t = sc.next_usize();
-        let e = sc.next_usize() - 1;
-        let x = sc.next_isize();
-
-        let (a, b) = if t == 1 {
-            edges[e]
-        } else {
-            let (i, j) = edges[e];
-            (j, i)
-        };
-
-        if depth[a] < depth[b] {
-            dp[0] += x;
-            dp[b] -= x;
-        } else {
-            dp[a] += x;
-        }
-    }
-
-    let mut queue = VecDeque::new();
-    queue.push_back(0);
-    while let Some(p) = queue.pop_front() {
-        for &c in &children[p] {
-            dp[c] += dp[p];
-            queue.push_back(c);
-        }
-    }
-
+    let mut dp = vec![I_INF; n];
     for i in 0..n {
-        writeln!(writer, "{}", dp[i]).unwrap();
+        for &c in &vertexes[i] {
+            dp[c] = dp[c].min(dp[i].min(a[i]));
+        }
     }
+
+    let mut ans = -I_INF;
+    for i in 1..n {
+        ans = ans.max(a[i] - dp[i]);
+    }
+
+    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod lib {

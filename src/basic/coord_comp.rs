@@ -1,6 +1,7 @@
-pub fn coord_comp<
-    T: std::hash::Hash + Clone + std::cmp::Ord + std::cmp::PartialEq + std::cmp::Eq,
->(
+use cargo_snippet::snippet;
+
+#[snippet(coord_comp)]
+pub fn compress<T: std::hash::Hash + Clone + std::cmp::Ord + std::cmp::PartialEq + std::cmp::Eq>(
     v: &[T],
 ) -> (Vec<T>, std::collections::HashMap<T, usize>) {
     let mut v = v.iter().collect::<Vec<_>>();

@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet("lcs")]
 pub fn lcs<T: Eq + Clone>(s: &[T], t: &[T]) -> (usize, Vec<T>) {
     let mut dp = vec![vec![0; t.len() + 2]; s.len() + 2];
     for i in 0..=s.len() {

@@ -1,4 +1,7 @@
+use cargo_snippet::snippet;
+
 /// セグ木にのせるMonoid
+#[snippet("seg_tree")]
 pub trait Monoid {
     type Item: std::fmt::Debug + Clone;
     /// 単位元
@@ -7,11 +10,13 @@ pub trait Monoid {
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item;
 }
 
+#[snippet("seg_tree")]
 pub struct SegTree<M: Monoid> {
     data: Vec<M::Item>,
     n: usize,
 }
 
+#[snippet("seg_tree")]
 impl<M: Monoid> SegTree<M> {
     /// すべて単位元で埋めた長さnのセグ木の生成
     pub fn new(n: usize) -> Self {

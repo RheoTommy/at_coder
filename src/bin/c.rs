@@ -17,22 +17,22 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let s = (0..n).map(|_| sc.next_string()).collect::<Vec<_>>();
+    let mut a = (0..2usize.pow(n as u32))
+        .map(|i| (i + 1, sc.next_usize()))
+        .collect::<Vec<_>>();
+    while a.len() > 2 {
+        let mut b = Vec::new();
+        for i in 0..a.len() / 2 {
+            if a[2 * i].1 > a[2 * i + 1].1 {
+                b.push(a[2 * i]);
+            } else {
+                b.push(a[2 * i + 1]);
+            }
+        }
+        a = b;
+    }
 
-    let mut b = HashSet::new();
-    for si in &s {
-        if &si[0..1] == "!" {
-            b.insert(&si[1..]);
-        }
-    }
-    for si in &s {
-        if b.contains(&si[..]) {
-            writeln!(writer, "{}", si).unwrap();
-            writer.flush().unwrap();
-            std::process::exit(0);
-        }
-    }
-    writeln!(writer, "{}", "satisfiable").unwrap();
+    writeln!(writer, "{}", a.iter().min_by_key(|(_, r)| r).unwrap().0).unwrap();
 }
 
 pub mod lib {

@@ -1,3 +1,7 @@
+use super::binary_search::BinarySearch;
+use cargo_snippet::snippet;
+
+#[snippet("lis")]
 pub fn lis<T: Ord + Clone>(v: &[T], max: T) -> (usize, Vec<T>) {
     let mut dp = vec![max.clone(); v.len()];
     for vi in v {
@@ -6,55 +10,4 @@ pub fn lis<T: Ord + Clone>(v: &[T], max: T) -> (usize, Vec<T>) {
     }
     let i = dp.lower_bound(|j| j >= &max);
     (i, dp)
-}
-
-/// 関数Fを適用すると[false..false,true..true]の形にできるような配列において、初めてtrueになるIndexを返す
-/// O(log n)
-pub trait BinarySearch<T> {
-    /// 存在しなかった場合は配列の長さを返す
-    fn lower_bound(&self, f: impl Fn(&T) -> bool) -> usize;
-    /// 存在しなかった場合はNoneを返す
-    fn lower_bound_safe(&self, f: impl Fn(&T) -> bool) -> Option<usize>;
-}
-
-impl<T> BinarySearch<T> for [T] {
-    /// 任意のランダムアクセス可能なスライスに対して実行可能な実装
-    fn lower_bound(&self, f: impl Fn(&T) -> bool) -> usize {
-        let mut left: isize = -1;
-        let mut right = self.len() as isize;
-
-        while right - left > 1 {
-            let mid = (left + right) / 2;
-            if f(&self[mid as usize]) {
-                right = mid;
-            } else {
-                left = mid;
-            }
-        }
-
-        right as usize
-    }
-
-    fn lower_bound_safe(&self, f: impl Fn(&T) -> bool) -> Option<usize> {
-        let i = self.lower_bound(f);
-        if i == self.len() {
-            None
-        } else {
-            Some(i)
-        }
-    }
-}
-
-pub fn lower_bound(l: isize, r: isize, f: impl Fn(usize) -> bool) -> usize {
-    let mut left = l;
-    let mut right = r;
-    while right - left > 1 {
-        let mid = ((left + right) / 2) as usize;
-        if f(mid) {
-            right = mid as isize;
-        } else {
-            left = mid as isize;
-        }
-    }
-    right as usize
 }

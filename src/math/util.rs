@@ -1,4 +1,7 @@
-pub fn pow<T: std::ops::Mul<Output=T> + From<isize> + Copy>(x: T, n: usize) -> T {
+use cargo_snippet::snippet;
+
+#[snippet("math_util")]
+pub fn pow<T: std::ops::Mul<Output = T> + From<isize> + Copy>(x: T, n: u128) -> T {
     if n == 0 {
         1isize.into()
     } else if n == 1 {
@@ -10,7 +13,25 @@ pub fn pow<T: std::ops::Mul<Output=T> + From<isize> + Copy>(x: T, n: usize) -> T
     }
 }
 
-pub fn gcd<T: From<usize> + std::ops::Rem<Output=T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
+#[snippet("math_util")]
+pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + From<isize> + Copy>(
+    x: T,
+    n: u128,
+    m: T,
+) -> T {
+    if n == 0 {
+        1isize.into()
+    } else if n == 1 {
+        x % m
+    } else if n % 2 == 1 {
+        x * mod_pow(x, n - 1, m) % m
+    } else {
+        mod_pow(x * x % m, n, m)
+    }
+}
+
+#[snippet("math_util")]
+pub fn gcd<T: From<usize> + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
     if a < b {
         gcd(b, a)
     } else if b == 0.into() {
@@ -20,7 +41,8 @@ pub fn gcd<T: From<usize> + std::ops::Rem<Output=T> + Copy + std::cmp::Ord>(a: T
     }
 }
 
-pub fn ext_gcd(a: isize, b: isize) -> (isize, isize, isize) {
+#[snippet("math_util")]
+pub fn ext_gcd(a: i128, b: i128) -> (i128, i128, i128) {
     if a < b {
         let (g, y, x) = ext_gcd(b, a);
         return (g, x, y);
@@ -33,13 +55,14 @@ pub fn ext_gcd(a: isize, b: isize) -> (isize, isize, isize) {
     (g, y, x - a / b * y)
 }
 
+#[snippet("math_util")]
 pub fn lcm<
     T: From<usize>
-    + std::ops::Mul<Output=T>
-    + std::ops::Div<Output=T>
-    + std::ops::Rem<Output=T>
-    + Copy
-    + std::cmp::Ord,
+        + std::ops::Mul<Output = T>
+        + std::ops::Div<Output = T>
+        + std::ops::Rem<Output = T>
+        + Copy
+        + std::cmp::Ord,
 >(
     a: T,
     b: T,
@@ -49,7 +72,8 @@ pub fn lcm<
 }
 
 /// O(√N)
-pub fn divisors(n: usize) -> Vec<usize> {
+#[snippet("math_util")]
+pub fn divisors(n: u128) -> Vec<u128> {
     let mut res = Vec::new();
     for i in 1.. {
         if i * i > n {
@@ -66,7 +90,8 @@ pub fn divisors(n: usize) -> Vec<usize> {
 }
 
 /// O(√N)
-pub fn is_prime(n: usize) -> bool {
+#[snippet("math_util")]
+pub fn is_prime(n: u128) -> bool {
     for i in 2.. {
         if i * i > n {
             break;
@@ -79,7 +104,8 @@ pub fn is_prime(n: usize) -> bool {
 }
 
 /// O(√N)
-pub fn primes(mut n: usize) -> std::collections::HashMap<usize, usize> {
+#[snippet("math_util")]
+pub fn primes(mut n: u128) -> std::collections::HashMap<u128, u128> {
     let mut res = std::collections::HashMap::new();
     for i in 2.. {
         if i * i > n {

@@ -1,4 +1,7 @@
+use cargo_snippet::snippet;
+
 /// UnionFind構造体
+#[snippet("union_find")]
 pub struct UnionFindTree {
     /// 頂点`i`の親を格納する配列
     parents: Vec<usize>,
@@ -10,6 +13,7 @@ pub struct UnionFindTree {
     has_loops: Vec<bool>,
 }
 
+#[snippet("union_find")]
 impl UnionFindTree {
     /// UnionFind初期化
     /// 計算量はO(n)

@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet("rle")]
 pub fn rle<T: Eq + Clone>(s: &[T]) -> Vec<(T, usize)> {
     let mut res: Vec<(T, usize)> = vec![];
     for si in s {

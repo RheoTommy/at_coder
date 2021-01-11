@@ -17,22 +17,10 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let points = (0..n)
-        .map(|_| (sc.next_isize(), sc.next_isize()))
-        .collect::<Vec<_>>();
-
-    let mut ans = 0usize;
-    for i in 0..n {
-        for j in i + 1..n {
-            let x = points[j].0 - points[i].0;
-            let y = points[j].1 - points[i].1;
-
-            if y.abs() <= x.abs() {
-                ans += 1;
-            }
-        }
-    }
-
+    let a = (0..n).map(|_| sc.next_isize()).collect::<Vec<_>>();
+    let b = (0..n).map(|_| sc.next_isize()).collect::<Vec<_>>();
+    let sum = a.into_iter().zip(b).map(|(ai, bi)| ai * bi).sum::<isize>();
+    let ans = if sum == 0 { "Yes" } else { "No" };
     writeln!(writer, "{}", ans).unwrap();
 }
 

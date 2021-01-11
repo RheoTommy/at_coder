@@ -1,4 +1,7 @@
+use cargo_snippet::snippet;
+
 /// 遅延セグ木にのせるMonoid
+#[snippet("lazy_seg_tree")]
 pub trait Monoid {
     type Item: std::fmt::Debug + Clone;
     /// 単位元
@@ -7,12 +10,14 @@ pub trait Monoid {
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item;
 }
 
+#[snippet("lazy_seg_tree")]
 pub struct LazySegTree<M: Monoid, L: Monoid> {
     data: Vec<M::Item>,
     lazy: Vec<Option<L::Item>>,
     n: usize,
 }
 
+#[snippet("lazy_seg_tree")]
 impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
     /// すべて単位元で埋めた長さnの遅延セグ木の生成
     pub fn new(n: usize) -> Self {

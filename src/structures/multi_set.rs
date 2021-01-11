@@ -1,8 +1,12 @@
+use cargo_snippet::snippet;
+
+#[snippet("multi_set")]
 pub struct MultiSet<K: Ord + Clone> {
     map: std::collections::BTreeMap<K, usize>,
     counter: usize,
 }
 
+#[snippet("multi_set")]
 impl<K: Ord + Clone> MultiSet<K> {
     pub fn new() -> Self {
         Self {
@@ -86,6 +90,7 @@ impl<K: Ord + Clone> MultiSet<K> {
     }
 }
 
+#[snippet("multi_set")]
 impl<K: Ord + Clone> IntoIterator for MultiSet<K> {
     type Item = K;
 

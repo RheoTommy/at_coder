@@ -1,9 +1,13 @@
+use cargo_snippet::snippet;
+
 /// 構築O(N log log N)で素因数分解系の操作が高速に行える
+#[snippet("eratosthenes")]
 pub struct Eratosthenes {
     /// n以下の整数iを割り切る最小の素数
     min_prime: Vec<usize>,
 }
 
+#[snippet("eratosthenes")]
 impl Eratosthenes {
     /// 構築O(N log log N)
     pub fn new(n: usize) -> Self {
