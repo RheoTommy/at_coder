@@ -2,21 +2,37 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-// main関数はファイルの最後にあります。
-// ライブラリなどテンプレはすべてlibモジュール内にコピペしています。
-// ライブラリのコードはこちら → 
+// # ファイル構成
+// - use宣言
+// - libモジュール
+// - main関数
+// - basicモジュール
+//
+// 常に使うテンプレートライブラリはbasicモジュール内にあります。
+// 問題に応じて使うライブラリlibモジュール内にコピペしています。
+// ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
+// Twitterはこちら → https://twitter.com/RheoTommy
 
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
 
-use crate::lib::Scanner;
+use crate::basic::*;
+use crate::lib::*;
 
-const U_INF: usize = 1 << 60;
-const I_INF: isize = 1 << 60;
+pub mod lib {}
 
-pub mod lib {
+fn main() {
+    let out = stdout();
+    let mut writer = BufWriter::new(out.lock());
+    let mut sc = Scanner::new();
+}
+
+pub mod basic {
+    pub const U_INF: usize = 1 << 60;
+    pub const I_INF: isize = 1 << 60;
+
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
         reader: std::io::BufReader<std::io::Stdin>,
@@ -84,10 +100,4 @@ pub mod lib {
             self.next()
         }
     }
-}
-
-fn main() {
-    let out = stdout();
-    let mut writer = BufWriter::new(out.lock());
-    let mut sc = Scanner::new();
 }
