@@ -51,3 +51,45 @@ impl<M: Monoid> BIT<M> {
         M::sub(&self.prefix_sum(right), &self.prefix_sum(left))
     }
 }
+
+#[snippet("bit")]
+pub struct Add;
+#[snippet("bit")]
+pub struct Xor;
+#[snippet("bit")]
+impl Monoid for Add {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        0
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a + b
+    }
+
+    fn sub(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a - b
+    }
+}
+#[snippet("bit")]
+impl Monoid for Xor {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        0
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a ^ b
+    }
+
+    fn sub(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a ^ b
+    }
+}
+
+#[snippet("bit")]
+pub type AddBIT = BIT<Add>;
+#[snippet("bit")]
+pub type XorBIT = BIT<Xor>;

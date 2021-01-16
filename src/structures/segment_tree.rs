@@ -1,3 +1,4 @@
+use super::super::math::util::gcd;
 use cargo_snippet::snippet;
 
 /// セグ木にのせるMonoid
@@ -84,3 +85,100 @@ impl<M: Monoid> SegTree<M> {
         M::op(&l_ans, &r_ans)
     }
 }
+
+#[snippet("seg_tree")]
+pub struct Max;
+#[snippet("seg_tree")]
+pub struct Min;
+#[snippet("seg_tree")]
+pub struct Sum;
+#[snippet("seg_tree")]
+pub struct Mul;
+#[snippet("seg_tree")]
+pub struct Xor;
+#[snippet("seg_tree")]
+pub struct GCD;
+#[snippet("seg_tree")]
+impl Monoid for Max {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        std::i128::MIN
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        *a.min(b)
+    }
+}
+#[snippet("seg_tree")]
+impl Monoid for Min {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        std::i128::MAX
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        *a.max(b)
+    }
+}
+#[snippet("seg_tree")]
+impl Monoid for Sum {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        0
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a + b
+    }
+}
+#[snippet("seg_tree")]
+impl Monoid for Mul {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        1
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a * b
+    }
+}
+#[snippet("seg_tree")]
+impl Monoid for Xor {
+    type Item = i128;
+
+    fn id() -> Self::Item {
+        0
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        a ^ b
+    }
+}
+#[snippet("seg_tree")]
+impl Monoid for GCD {
+    type Item = u128;
+
+    fn id() -> Self::Item {
+        0
+    }
+
+    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+        gcd(*a, *b)
+    }
+}
+#[snippet("seg_tree")]
+pub type MaxSegTree = SegTree<Max>;
+#[snippet("seg_tree")]
+pub type MinSegTree = SegTree<Min>;
+#[snippet("seg_tree")]
+pub type SumSegTree = SegTree<Sum>;
+#[snippet("seg_tree")]
+pub type MulSegTree = SegTree<Mul>;
+#[snippet("seg_tree")]
+pub type XorSegTree = SegTree<Xor>;
+#[snippet("seg_tree")]
+pub type GCDSegTree = SegTree<GCD>;
