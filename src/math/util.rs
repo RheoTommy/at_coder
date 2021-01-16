@@ -26,7 +26,7 @@ pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + From<i
     } else if n % 2 == 1 {
         x * mod_pow(x, n - 1, m) % m
     } else {
-        mod_pow(x * x % m, n, m)
+        mod_pow(x * x % m, n / 2, m)
     }
 }
 
