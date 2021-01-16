@@ -1,9 +1,10 @@
+use super::num_type::{GCDIdent, MulDivIdent};
 use cargo_snippet::snippet;
 
 #[snippet("math_util")]
-pub fn pow<T: std::ops::Mul<Output = T> + From<isize> + Copy>(x: T, n: u128) -> T {
+pub fn pow<T: std::ops::Mul<Output = T> + MulDivIdent + Copy>(x: T, n: u128) -> T {
     if n == 0 {
-        1isize.into()
+        T::mul_div_ident()
     } else if n == 1 {
         x
     } else if n % 2 == 1 {
@@ -14,13 +15,13 @@ pub fn pow<T: std::ops::Mul<Output = T> + From<isize> + Copy>(x: T, n: u128) -> 
 }
 
 #[snippet("math_util")]
-pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + From<isize> + Copy>(
+pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + MulDivIdent + Copy>(
     x: T,
     n: u128,
     m: T,
 ) -> T {
     if n == 0 {
-        1isize.into()
+        T::mul_div_ident() % m
     } else if n == 1 {
         x % m
     } else if n % 2 == 1 {
@@ -31,10 +32,8 @@ pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + From<i
 }
 
 #[snippet("math_util")]
-pub fn gcd<T: From<usize> + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
-    if a < b {
-        gcd(b, a)
-    } else if b == 0.into() {
+pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
+    if b == T::gcd_ident() {
         a
     } else {
         gcd(b, a % b)
@@ -57,7 +56,7 @@ pub fn ext_gcd(a: i128, b: i128) -> (i128, i128, i128) {
 
 #[snippet("math_util")]
 pub fn lcm<
-    T: From<usize>
+    T: GCDIdent
         + std::ops::Mul<Output = T>
         + std::ops::Div<Output = T>
         + std::ops::Rem<Output = T>

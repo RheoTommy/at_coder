@@ -1,3 +1,4 @@
+use super::num_type::*;
 use cargo_snippet::snippet;
 
 #[snippet("mod_int")]
@@ -52,78 +53,16 @@ impl std::fmt::Display for ModInt {
 }
 
 #[snippet("mod_int")]
-impl From<usize> for ModInt {
-    fn from(n: usize) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<u64> for ModInt {
-    fn from(n: u64) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<u32> for ModInt {
-    fn from(n: u32) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<u16> for ModInt {
-    fn from(n: u16) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<u8> for ModInt {
-    fn from(n: u8) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<isize> for ModInt {
-    fn from(n: isize) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<i64> for ModInt {
-    fn from(n: i64) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<i32> for ModInt {
-    fn from(n: i32) -> Self {
-        Self::new(n)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<i16> for ModInt {
-    fn from(n: i16) -> Self {
-        Self::new(n as i32)
-    }
-}
-
-#[snippet("mod_int")]
-impl From<i8> for ModInt {
-    fn from(n: i8) -> Self {
-        Self::new(n as i32)
+impl<T: Into<Num>> From<T> for ModInt {
+    fn from(t: T) -> Self {
+        let n: Num = t.into();
+        Self::new((n.0 % MOD as i128) as i32)
     }
 }
 
 #[snippet("mod_int")]
 impl<T: Into<ModInt>> std::ops::Add<T> for ModInt {
-    type Output = Self;
+    type Output = ModInt;
 
     fn add(self, rhs: T) -> Self::Output {
         let mut tmp = self.value;
@@ -214,7 +153,9 @@ fn test_mod_int() {
     const MOD: i32 = 1000000007;
     let add = (1000000000 + 1000000000) % MOD;
     let add_mod = ModInt::new(1000000000) + ModInt::new(1000000000);
+    let add_impl = ModInt::new(1000000000) + 1000000000;
     assert_eq!(add, add_mod.value);
+    assert_eq!(add_mod, add_impl);
 
     let rem = (1 - 2 + MOD) % MOD;
     let rem_mod = ModInt::new(1) - ModInt::new(2);
@@ -258,9 +199,15 @@ impl CombTable {
 
     /// nCkをO(1)で計算
     pub fn comb(&self, n: usize, k: usize) -> ModInt {
-        if n < k || n * k == 0 {
+        if n < k {
             return ModInt::new(0);
         }
         self.fac[n] * (self.f_inv[k] * self.f_inv[n - k])
     }
+}
+
+#[test]
+fn test_comb() {
+    let comb = CombTable::new(10000);
+    assert_eq!(comb.comb(10, 0), 1.into());
 }

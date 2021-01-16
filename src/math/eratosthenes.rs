@@ -30,6 +30,9 @@ impl Eratosthenes {
 
     /// 素数判定O(1)
     pub fn is_prime(&self, i: usize) -> bool {
+        if i <= 1 {
+            return false;
+        }
         self.min_prime[i] == i
     }
 

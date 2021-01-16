@@ -45,7 +45,11 @@ impl Scanner {
         self.next()
     }
 
-    pub fn next_i128(&mut self) -> i128 {
+    pub fn next_int(&mut self) -> i128 {
+        self.next()
+    }
+
+    pub fn next_uint(&mut self) -> u128 {
         self.next()
     }
 

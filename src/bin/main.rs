@@ -22,9 +22,128 @@ use crate::basic::*;
 use crate::lib::*;
 
 pub mod lib {
-    pub fn pow<T: std::ops::Mul<Output = T> + From<isize> + Copy>(x: T, n: u128) -> T {
+    use cargo_snippet::snippet;
+    /// 加減算
+    pub trait AddSubIdent {
+        fn add_sub_ident() -> Self;
+    }
+    /// 乗除算
+    pub trait MulDivIdent {
+        fn mul_div_ident() -> Self;
+    }
+    /// GCD
+    pub trait GCDIdent {
+        fn gcd_ident() -> Self;
+    }
+    /// LCM
+    pub trait LCMIdent {
+        fn lcm_ident() -> Self;
+    }
+    /// Max
+    pub trait MaxIdent {
+        fn max_ident() -> Self;
+    }
+    /// Min
+    pub trait MinIdent {
+        fn min_ident() -> Self;
+    }
+    /// Xor
+    pub trait XorIdent {
+        fn xor_ident() -> Self;
+    }
+    /// 変換用
+    pub struct Num(i128);
+    macro_rules! impl_num {
+        ($ t : ty ) => {
+            impl From<Num> for $t {
+                fn from(t: Num) -> $t {
+                    t.0 as $t
+                }
+            }
+        };
+    }
+    impl_num!(i8);
+    impl_num!(i16);
+    impl_num!(i32);
+    impl_num!(i64);
+    impl_num!(i128);
+    impl_num!(isize);
+    impl_num!(u8);
+    impl_num!(u16);
+    impl_num!(u32);
+    impl_num!(u64);
+    impl_num!(u128);
+    impl_num!(usize);
+    impl<T: From<Num>> AddSubIdent for T {
+        fn add_sub_ident() -> Self {
+            Num(0).into()
+        }
+    }
+    impl<T: From<Num>> MulDivIdent for T {
+        fn mul_div_ident() -> Self {
+            Num(1).into()
+        }
+    }
+    impl<T: From<Num>> GCDIdent for T {
+        fn gcd_ident() -> Self {
+            Num(0).into()
+        }
+    }
+    impl<T: From<Num>> LCMIdent for T {
+        fn lcm_ident() -> Self {
+            Num(1).into()
+        }
+    }
+    macro_rules! impl_min {
+        ($ t : ident ) => {
+            impl MinIdent for $t {
+                fn min_ident() -> Self {
+                    std::$t::MIN
+                }
+            }
+        };
+    }
+    impl_min!(i8);
+    impl_min!(i16);
+    impl_min!(i32);
+    impl_min!(i64);
+    impl_min!(i128);
+    impl_min!(isize);
+    impl_min!(u8);
+    impl_min!(u16);
+    impl_min!(u32);
+    impl_min!(u64);
+    impl_min!(u128);
+    impl_min!(usize);
+    macro_rules! impl_max {
+        ($ t : ident ) => {
+            impl MaxIdent for $t {
+                fn max_ident() -> Self {
+                    std::$t::MAX
+                }
+            }
+        };
+    }
+    impl_max!(i8);
+    impl_max!(i16);
+    impl_max!(i32);
+    impl_max!(i64);
+    impl_max!(i128);
+    impl_max!(isize);
+    impl_max!(u8);
+    impl_max!(u16);
+    impl_max!(u32);
+    impl_max!(u64);
+    impl_max!(u128);
+    impl_max!(usize);
+    impl<T: From<Num>> XorIdent for T {
+        fn xor_ident() -> Self {
+            Num(0).into()
+        }
+    }
+    pub fn pow<T: std::ops::Mul<Output = T> + MulDivIdent + Copy>(x: T, n: u128) -> T {
         if n == 0 {
-            1isize.into()
+            T::mul_div_ident()
         } else if n == 1 {
             x
         } else if n % 2 == 1 {
@@ -34,14 +153,14 @@ pub mod lib {
         }
     }
     pub fn mod_pow<
-        T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + From<isize> + Copy,
+        T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + MulDivIdent + Copy,
     >(
         x: T,
         n: u128,
         m: T,
     ) -> T {
         if n == 0 {
-            1isize.into()
+            T::mul_div_ident() % m
         } else if n == 1 {
             x % m
         } else if n % 2 == 1 {
@@ -50,10 +169,8 @@ pub mod lib {
             mod_pow(x * x % m, n / 2, m)
         }
     }
-    pub fn gcd<T: From<usize> + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
-        if a < b {
-            gcd(b, a)
-        } else if b == 0.into() {
+    pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
+        if b == T::gcd_ident() {
             a
         } else {
             gcd(b, a % b)
@@ -71,7 +188,7 @@ pub mod lib {
         (g, y, x - a / b * y)
     }
     pub fn lcm<
-        T: From<usize>
+        T: GCDIdent
             + std::ops::Mul<Output = T>
             + std::ops::Div<Output = T>
             + std::ops::Rem<Output = T>
@@ -139,10 +256,9 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize() as u128;
-    let m = sc.next_i128() as isize;
-    let b = mod_pow(10, n as u128, m * m) / m;
-    writeln!(writer, "{}", b).unwrap();
+    let a = 50i128;
+    let b = 100;
+    writeln!(writer, "{}", gcd(a, b)).unwrap();
 }
 
 pub mod basic {
@@ -196,7 +312,11 @@ pub mod basic {
             self.next()
         }
 
-        pub fn next_i128(&mut self) -> i128 {
+        pub fn next_int(&mut self) -> i128 {
+            self.next()
+        }
+
+        pub fn next_uint(&mut self) -> u128 {
             self.next()
         }
 
