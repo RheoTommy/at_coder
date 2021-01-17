@@ -2,90 +2,72 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
-use std::collections::*;
+// # ファイル構成
+// - use宣言
+// - libモジュール
+// - main関数
+// - basicモジュール
+//
+// 常に使うテンプレートライブラリはbasicモジュール内にあります。
+// 問題に応じて使うライブラリlibモジュール内にコピペしています。
+// ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
+// Twitterはこちら → https://twitter.com/RheoTommy
+
 use std::io::{stdout, BufWriter, Write};
+use std::{collections::*, vec};
 
 use itertools::Itertools;
-use lib::coord_comp;
+use num_integer::lcm;
 
-use crate::lib::Scanner;
+use crate::basic::*;
+use crate::lib::*;
 
-const U_INF: usize = 1 << 60;
-const I_INF: isize = 1 << 60;
+pub mod lib {}
 
 fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let c = sc.next_usize();
-    let mut coord = Vec::new();
-    let mut services = Vec::new();
-    for _ in 0..n {
-        let a = sc.next_usize();
-        let b = sc.next_usize() + 1;
-        let c = sc.next_usize();
-        coord.push(a);
-        coord.push(b);
-        services.push((a, b, c));
-    }
-    let (zipped, index) = coord_comp(&coord);
-    let mut imos = vec![0isize; zipped.len() + 10];
-    for &(a, b, c) in &services {
-        imos[index[&a]] += c as isize;
-        imos[index[&b]] -= c as isize;
-    }
-    for i in 1..imos.len() {
-        imos[i] += imos[i - 1];
-    }
 
-    // eprintln!("{:?}", imos);
-
-    let mut ans = 0;
-    for i in 0..zipped.len() - 1 {
-        if imos[i] > c as isize {
-            ans += (zipped[i + 1] - zipped[i]) * c;
-        } else {
-            ans += imos[i] as usize * (zipped[i + 1] - zipped[i]);
-        }
+    if n == 1 {
+        writeln!(writer, "{}", 1).unwrap();
+        writeln!(writer, "{}", "AB").unwrap();
+        writer.flush().unwrap();
+        std::process::exit(0);
     }
-    writeln!(writer, "{}", ans).unwrap();
+    // 回数はlcm(2^n - 1, 2^(n-1) - 1)回の可能性が高い
+    let amount = 2usize.pow(n as u32);
+    let k = lcm(amount - 1, amount / 2 - 1);
+    let same = k / (amount - 1) * (amount / 2 - 1);
+    let mut vertex = vec![vec![same; amount]; amount];
+
+    writeln!(writer, "{}", k).unwrap();
 }
 
-pub mod lib {
-    pub fn coord_comp<
-        T: std::hash::Hash + Clone + std::cmp::Ord + std::cmp::PartialEq + std::cmp::Eq,
-    >(
-        v: &[T],
-    ) -> (Vec<T>, std::collections::HashMap<T, usize>) {
-        let mut v = v.iter().collect::<Vec<_>>();
-        v.sort();
-        v.dedup();
-        let mut res = std::collections::HashMap::new();
-        let mut zip = Vec::with_capacity(v.len());
-        for (i, vi) in v.into_iter().enumerate() {
-            zip.push(vi.clone());
-            res.insert(vi.clone(), i);
-        }
-        (zip, res)
-    }
+pub mod basic {
+    pub const U_INF: usize = 1 << 60;
+    pub const I_INF: isize = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
+        reader: std::io::BufReader<std::io::Stdin>,
     }
 
     impl Scanner {
         pub fn new() -> Self {
             Self {
                 buf: std::collections::VecDeque::new(),
+                reader: std::io::BufReader::new(std::io::stdin()),
             }
         }
 
         fn scan_line(&mut self) {
+            use std::io::BufRead;
             let mut flag = 0;
             while self.buf.is_empty() {
                 let mut s = String::new();
-                std::io::stdin().read_line(&mut s).unwrap();
+                self.reader.read_line(&mut s).unwrap();
                 let mut iter = s.split_whitespace().peekable();
                 if iter.peek().is_none() {
                     if flag >= 5 {
@@ -114,7 +96,11 @@ pub mod lib {
             self.next()
         }
 
-        pub fn next_isize(&mut self) -> isize {
+        pub fn next_int(&mut self) -> i128 {
+            self.next()
+        }
+
+        pub fn next_uint(&mut self) -> u128 {
             self.next()
         }
 

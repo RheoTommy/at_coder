@@ -2,83 +2,74 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
+// # ファイル構成
+// - use宣言
+// - libモジュール
+// - main関数
+// - basicモジュール
+//
+// 常に使うテンプレートライブラリはbasicモジュール内にあります。
+// 問題に応じて使うライブラリlibモジュール内にコピペしています。
+// ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
+// Twitterはこちら → https://twitter.com/RheoTommy
+
 use std::io::{stdout, BufWriter, Write};
-use std::{collections::*, fmt::format};
+use std::{collections::*, vec};
 
 use itertools::Itertools;
 
-use crate::lib::Scanner;
+use crate::basic::*;
+use crate::lib::*;
 
-const U_INF: usize = 1 << 60;
-const I_INF: isize = 1 << 60;
+pub mod lib {}
 
 fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let x = sc.next_usize() as u128;
-    let y = sc.next_usize() as u128;
-
-    if x >= y {
-        writeln!(writer, "{}", x - y).unwrap();
-        writer.flush().unwrap();
-        std::process::exit(0);
-    }
-
-    let mut ans = U_INF;
-
-    // 2倍する回数全探索
-    for z in 0..=100 {
-        let made = x * 2u128.pow(z);
-        let diff = if made > y { made - y } else { y - made };
-
-        let k = z.min(format!("{:b}", diff).len() as u32);
-        eprintln!("{:?}", k);
-        let mut l = U_INF;
-
-        for bit in 0..3u128.pow(k) {
-            let mut acc = 0;
-            let mut count = 0;
-            for i in 0..k {
-                let b = (bit / 3u128.pow(i)) % 3;
-                if b == 1 {
-                    acc += 2i128.pow(i);
-                    count += 1;
-                } else if b == 2 {
-                    acc -= 2i128.pow(i);
-                    count += 1;
+    let k = sc.next_usize();
+    let s = (0..k).map(|_| sc.next_chars()).collect::<Vec<_>>();
+    let n = s[0].len();
+    let mut dp = vec![vec![0; n]; n];
+    for si in s {
+        for i in 0..n {
+            for j in i + 1..n {
+                if si[i] == si[j] {
+                    dp[i][j] += 1;
+                    dp[j][i] += 1;
                 }
             }
-            if diff == acc as u128 {
-                l = l.min(count);
-            }
         }
-
-        ans = ans.min(z as usize + l);
     }
 
-    writeln!(writer, "{}", ans).unwrap();
-
-    writeln!(writer, "{}", ans).unwrap();
+    for dpi in dp {
+        eprintln!("{:?}", dpi);
+    }
 }
 
-pub mod lib {
+pub mod basic {
+    pub const U_INF: usize = 1 << 60;
+    pub const I_INF: isize = 1 << 60;
+
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
+        reader: std::io::BufReader<std::io::Stdin>,
     }
 
     impl Scanner {
         pub fn new() -> Self {
             Self {
                 buf: std::collections::VecDeque::new(),
+                reader: std::io::BufReader::new(std::io::stdin()),
             }
         }
 
         fn scan_line(&mut self) {
+            use std::io::BufRead;
             let mut flag = 0;
             while self.buf.is_empty() {
                 let mut s = String::new();
-                std::io::stdin().read_line(&mut s).unwrap();
+                self.reader.read_line(&mut s).unwrap();
                 let mut iter = s.split_whitespace().peekable();
                 if iter.peek().is_none() {
                     if flag >= 5 {
@@ -107,7 +98,11 @@ pub mod lib {
             self.next()
         }
 
-        pub fn next_isize(&mut self) -> isize {
+        pub fn next_int(&mut self) -> i128 {
+            self.next()
+        }
+
+        pub fn next_uint(&mut self) -> u128 {
             self.next()
         }
 

@@ -2,43 +2,86 @@
 #![allow(dead_code)]
 #![allow(unused_imports)]
 
+// # ファイル構成
+// - use宣言
+// - libモジュール
+// - main関数
+// - basicモジュール
+//
+// 常に使うテンプレートライブラリはbasicモジュール内にあります。
+// 問題に応じて使うライブラリlibモジュール内にコピペしています。
+// ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
+// Twitterはこちら → https://twitter.com/RheoTommy
+
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
+use num_integer::gcd;
 
-use crate::lib::Scanner;
+use crate::basic::*;
+use crate::lib::*;
 
-const U_INF: usize = 1 << 60;
-const I_INF: isize = 1 << 60;
+pub mod lib {}
 
 fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let x = sc.next_usize();
-    let y = sc.next_usize();
-    let ans = if x.min(y) + 3 > x.max(y) { "Yes" } else { "No" };
-    writeln!(writer, "{}", ans).unwrap();
+    let n = sc.next_usize();
+    let mut a = (0..n).map(|_| sc.next_uint()).collect::<Vec<_>>();
+    let mut ans = vec![];
+    ans.push(a.iter().fold(0, |i, j| gcd(i, *j)));
+
+    for k in (1..n).rev() {
+        let b = a.clone();
+        let mut g = (0, vec![]);
+        for i in 0..b.len() - 1 {
+            let mut c = vec![];
+            for j in 0..b.len() {
+                if i == j {
+                    c.push(b[j] + b[j + 1]);
+                } else if i + 1 == j {
+                    continue;
+                } else {
+                    c.push(b[j]);
+                }
+            }
+            let gi = c.iter().fold(0, |j, k| gcd(j, *k));
+            g = g.max((gi, c));
+        }
+        a = g.1;
+        ans.push(g.0);
+    }
+
+    for ai in ans.into_iter().rev() {
+        writeln!(writer, "{}", ai).unwrap();
+    }
 }
 
-pub mod lib {
+pub mod basic {
+    pub const U_INF: usize = 1 << 60;
+    pub const I_INF: isize = 1 << 60;
+
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
+        reader: std::io::BufReader<std::io::Stdin>,
     }
 
     impl Scanner {
         pub fn new() -> Self {
             Self {
                 buf: std::collections::VecDeque::new(),
+                reader: std::io::BufReader::new(std::io::stdin()),
             }
         }
 
         fn scan_line(&mut self) {
+            use std::io::BufRead;
             let mut flag = 0;
             while self.buf.is_empty() {
                 let mut s = String::new();
-                std::io::stdin().read_line(&mut s).unwrap();
+                self.reader.read_line(&mut s).unwrap();
                 let mut iter = s.split_whitespace().peekable();
                 if iter.peek().is_none() {
                     if flag >= 5 {
@@ -67,7 +110,11 @@ pub mod lib {
             self.next()
         }
 
-        pub fn next_isize(&mut self) -> isize {
+        pub fn next_int(&mut self) -> i128 {
+            self.next()
+        }
+
+        pub fn next_uint(&mut self) -> u128 {
             self.next()
         }
 

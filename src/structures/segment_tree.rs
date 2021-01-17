@@ -1,4 +1,3 @@
-use super::super::math::util::gcd;
 use cargo_snippet::snippet;
 
 /// セグ木にのせるMonoid
@@ -97,8 +96,6 @@ pub struct Mul;
 #[snippet("seg_tree")]
 pub struct Xor;
 #[snippet("seg_tree")]
-pub struct GCD;
-#[snippet("seg_tree")]
 impl Monoid for Max {
     type Item = i128;
 
@@ -158,18 +155,7 @@ impl Monoid for Xor {
         a ^ b
     }
 }
-#[snippet("seg_tree")]
-impl Monoid for GCD {
-    type Item = u128;
 
-    fn id() -> Self::Item {
-        0
-    }
-
-    fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
-        gcd(*a, *b)
-    }
-}
 #[snippet("seg_tree")]
 pub type MaxSegTree = SegTree<Max>;
 #[snippet("seg_tree")]
@@ -180,5 +166,3 @@ pub type SumSegTree = SegTree<Sum>;
 pub type MulSegTree = SegTree<Mul>;
 #[snippet("seg_tree")]
 pub type XorSegTree = SegTree<Xor>;
-#[snippet("seg_tree")]
-pub type GCDSegTree = SegTree<GCD>;
