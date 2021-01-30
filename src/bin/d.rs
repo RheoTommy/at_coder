@@ -13,11 +13,10 @@
 // ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
 // Twitterはこちら → https://twitter.com/RheoTommy
 
+use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
-use std::{collections::*, vec};
 
 use itertools::Itertools;
-use num_integer::lcm;
 
 use crate::basic::*;
 use crate::lib::*;
@@ -28,26 +27,42 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
+    let n = sc.next_int() * 2;
 
-    if n == 1 {
-        writeln!(writer, "{}", 1).unwrap();
-        writeln!(writer, "{}", "AB").unwrap();
-        writer.flush().unwrap();
-        std::process::exit(0);
+    let mut cnt = 0;
+    for i in 1.. {
+        if i * i > n {
+            break;
+        }
+        if n % i != 0 {
+            continue;
+        }
+        let j = n / i;
+
+        {
+            let l = (i + j - 1) / 2;
+            let k = i - l;
+            if (k + l) * (l - k + 1) == n {
+                cnt += 1;
+            }
+        }
+        {
+            let i = -i;
+            let j = -j;
+            let l = (i + j - 1) / 2;
+            let k = i - l;
+            if (k + l) * (l - k + 1) == n {
+                cnt += 1;
+            }
+        }
     }
-    // 回数はlcm(2^n - 1, 2^(n-1) - 1)回の可能性が高い
-    let amount = 2usize.pow(n as u32);
-    let k = lcm(amount - 1, amount / 2 - 1);
-    let same = k / (amount - 1) * (amount / 2 - 1);
-    let mut vertex = vec![vec![same; amount]; amount];
 
-    writeln!(writer, "{}", k).unwrap();
+    writeln!(writer, "{}", cnt).unwrap();
 }
 
 pub mod basic {
-    pub const U_INF: usize = 1 << 60;
-    pub const I_INF: isize = 1 << 60;
+    pub const U_INF: u128 = 1 << 60;
+    pub const I_INF: i128 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,

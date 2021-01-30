@@ -28,32 +28,22 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let k = sc.next_uint();
-    let mut a = (0..n).map(|_| sc.next_uint()).collect::<Vec<_>>();
-    a.sort();
-    let mut set = BTreeMap::new();
-    set.insert(0, k);
-    for ai in a {
-        if set.contains_key(&(ai)) {
-            *set.entry(ai).or_insert(1) -= 1;
-            *set.entry(ai + 1).or_insert(0) += 1;
-
-            if set[&ai] == 0 {
-                set.remove(&ai);
-            }
+    let s = sc.next_uint();
+    let d = sc.next_uint();
+    for _ in 0..n {
+        let x = sc.next_uint();
+        let y = sc.next_uint();
+        if x < s && y > d {
+            writeln!(writer, "{}", "Yes").unwrap();
+            return;
         }
     }
-
-    let mut ans = 0;
-    for (k, v) in set {
-        ans += k * v;
-    }
-    writeln!(writer, "{}", ans).unwrap();
+    writeln!(writer, "{}", "No").unwrap();
 }
 
 pub mod basic {
-    pub const U_INF: usize = 1 << 60;
-    pub const I_INF: isize = 1 << 60;
+    pub const U_INF: u128 = 1 << 60;
+    pub const I_INF: i128 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,

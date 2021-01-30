@@ -18,8 +18,12 @@ pub struct ModInt {
 
 #[snippet("mod_int")]
 impl ModInt {
+    pub fn new<T: Into<ModInt>>(n: T) -> Self {
+        n.into()
+    }
+
     /// isizeを受け取り、ModIntに変換する
-    pub fn new(n: i32) -> Self {
+    fn new_inner(n: i32) -> Self {
         let mut value = n % MOD;
         if value < 0 {
             value += MOD;
@@ -31,7 +35,7 @@ impl ModInt {
     /// 二分累乗法を用いるため、計算量はO(log n)
     pub fn pow(self, n: u128) -> Self {
         match n {
-            0 => ModInt::new(1),
+            0 => ModInt::new_inner(1),
             1 => self,
             n if n % 2 == 0 => (self * self).pow(n / 2),
             _ => self * self.pow(n - 1),
@@ -56,7 +60,7 @@ impl std::fmt::Display for ModInt {
 impl<T: Into<Num>> From<T> for ModInt {
     fn from(t: T) -> Self {
         let n: Num = t.into();
-        Self::new((n.0 % MOD as i128) as i32)
+        Self::new_inner((n.0 % MOD as i128) as i32)
     }
 }
 
@@ -152,21 +156,21 @@ impl<T: Into<ModInt>> std::ops::DivAssign<T> for ModInt {
 fn test_mod_int() {
     const MOD: i32 = 1000000007;
     let add = (1000000000 + 1000000000) % MOD;
-    let add_mod = ModInt::new(1000000000) + ModInt::new(1000000000);
-    let add_impl = ModInt::new(1000000000) + 1000000000;
+    let add_mod = ModInt::new_inner(1000000000) + ModInt::new_inner(1000000000);
+    let add_impl = ModInt::new_inner(1000000000) + 1000000000;
     assert_eq!(add, add_mod.value);
     assert_eq!(add_mod, add_impl);
 
     let rem = (1 - 2 + MOD) % MOD;
-    let rem_mod = ModInt::new(1) - ModInt::new(2);
+    let rem_mod = ModInt::new_inner(1) - ModInt::new_inner(2);
     assert_eq!(rem, rem_mod.value);
 
     let mul = (12345679 * 90) % MOD;
-    let mul_mod = ModInt::new(12345679) * ModInt::new(90);
+    let mul_mod = ModInt::new_inner(12345679) * ModInt::new_inner(90);
     assert_eq!(mul, mul_mod.value);
 
     let div = (5000 / 10) % MOD;
-    let div_mod = ModInt::new(5000) / ModInt::new(10);
+    let div_mod = ModInt::new_inner(5000) / ModInt::new_inner(10);
     assert_eq!(div, div_mod.value);
 }
 
@@ -184,14 +188,14 @@ pub struct CombTable {
 impl CombTable {
     /// O(N)で構築
     pub fn new(n: usize) -> Self {
-        let mut fac = vec![ModInt::new(1); n + 1];
-        let mut f_inv = vec![ModInt::new(1); n + 1];
-        let mut inv = vec![ModInt::new(1); n + 1];
-        inv[0] = ModInt::new(0);
+        let mut fac = vec![ModInt::new_inner(1); n + 1];
+        let mut f_inv = vec![ModInt::new_inner(1); n + 1];
+        let mut inv = vec![ModInt::new_inner(1); n + 1];
+        inv[0] = ModInt::new_inner(0);
         for i in 2..=n {
             fac[i] = fac[i - 1] * i;
-            inv[i] =
-                ModInt::new(MOD) - inv[(MOD % i as i32) as usize] * ModInt::new(MOD / i as i32);
+            inv[i] = ModInt::new_inner(MOD)
+                - inv[(MOD % i as i32) as usize] * ModInt::new_inner(MOD / i as i32);
             f_inv[i] = f_inv[i - 1] * inv[i];
         }
         Self { fac, f_inv }
@@ -200,7 +204,7 @@ impl CombTable {
     /// nCkをO(1)で計算
     pub fn comb(&self, n: usize, k: usize) -> ModInt {
         if n < k {
-            return ModInt::new(0);
+            return ModInt::new_inner(0);
         }
         self.fac[n] * (self.f_inv[k] * self.f_inv[n - k])
     }

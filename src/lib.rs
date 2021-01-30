@@ -10,7 +10,7 @@ pub mod algorithms;
 
 /// 数学ライブラリ集
 /// # 例
-/// - modint
+/// - mod_int
 /// - pow
 pub mod math;
 

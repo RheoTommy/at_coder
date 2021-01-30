@@ -71,10 +71,12 @@ impl UnionFindTree {
             self.has_loops[root_y] = true;
         } else if self.sizes[root_x] >= self.sizes[root_y] {
             self.parents[root_y] = root_x;
+            self.has_loops[root_x] |= self.has_loops[root_y];
             self.sizes[root_x] += self.sizes[root_y];
             self.weights[root_y] = -w - self.weights[y] + self.weights[x];
         } else {
             self.parents[root_x] = root_y;
+            self.has_loops[root_y] |= self.has_loops[root_x];
             self.sizes[root_y] += self.sizes[root_x];
             self.weights[root_x] = w + self.weights[y] - self.weights[x];
         }

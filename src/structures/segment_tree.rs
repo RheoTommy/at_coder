@@ -17,6 +17,14 @@ pub struct SegTree<M: Monoid> {
 }
 
 #[snippet("seg_tree")]
+impl<M: Monoid> std::fmt::Debug for SegTree<M> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let v = &self.data[self.n - 1..];
+        write!(f, "{:?}", v)
+    }
+}
+
+#[snippet("seg_tree")]
 impl<M: Monoid> SegTree<M> {
     /// すべて単位元で埋めた長さnのセグ木の生成
     pub fn new(n: usize) -> Self {
@@ -104,7 +112,7 @@ impl Monoid for Max {
     }
 
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
-        *a.min(b)
+        *a.max(b)
     }
 }
 #[snippet("seg_tree")]
@@ -116,7 +124,7 @@ impl Monoid for Min {
     }
 
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
-        *a.max(b)
+        *a.min(b)
     }
 }
 #[snippet("seg_tree")]

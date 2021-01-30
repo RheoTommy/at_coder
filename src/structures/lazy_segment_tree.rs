@@ -18,6 +18,14 @@ pub struct LazySegTree<M: Monoid, L: Monoid> {
 }
 
 #[snippet("lazy_seg_tree")]
+impl<M: Monoid, L: Monoid> std::fmt::Debug for LazySegTree<M, L> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let v = &self.data[self.n - 1..];
+        write!(f, "{:?}", v)
+    }
+}
+
+#[snippet("lazy_seg_tree")]
 impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
     /// すべて単位元で埋めた長さnの遅延セグ木の生成
     pub fn new(n: usize) -> Self {
@@ -74,7 +82,11 @@ impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
     }
 
     /// 遅延を評価し子ノードに伝播
-    fn eval(&mut self, k: usize, apply: &impl Fn(&M::Item, &L::Item, usize, usize) -> M::Item) {
+    fn eval(
+        &mut self,
+        k: usize,
+        apply: &mut impl FnMut(&M::Item, &L::Item, usize, usize) -> M::Item,
+    ) {
         if let Some(lv) = self.lazy[k].clone() {
             if k < self.n - 1 {
                 self.lazy[k * 2 + 1] = Some(L::op(
@@ -103,7 +115,7 @@ impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
         k: usize,
         l: usize,
         r: usize,
-        apply: &impl Fn(&M::Item, &L::Item, usize, usize) -> M::Item,
+        apply: &mut impl FnMut(&M::Item, &L::Item, usize, usize) -> M::Item,
     ) -> M::Item {
         self.eval(k, apply);
         if end <= l || r <= start {
@@ -121,7 +133,7 @@ impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
         &mut self,
         start: usize,
         end: usize,
-        apply: &impl Fn(&M::Item, &L::Item, usize, usize) -> M::Item,
+        apply: &mut impl FnMut(&M::Item, &L::Item, usize, usize) -> M::Item,
     ) -> M::Item {
         self.fold_sub(start, end, 0, 0, self.n, apply)
     }
@@ -131,7 +143,7 @@ impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
         start: usize,
         end: usize,
         lv: L::Item,
-        apply: &impl Fn(&M::Item, &L::Item, usize, usize) -> M::Item,
+        apply: &mut impl FnMut(&M::Item, &L::Item, usize, usize) -> M::Item,
     ) {
         self.set_section_sub(start, end, 0, 0, self.n, lv, apply)
     }
@@ -144,7 +156,7 @@ impl<M: Monoid, L: Monoid> LazySegTree<M, L> {
         l: usize,
         r: usize,
         lv: L::Item,
-        apply: &impl Fn(&M::Item, &L::Item, usize, usize) -> M::Item,
+        apply: &mut impl FnMut(&M::Item, &L::Item, usize, usize) -> M::Item,
     ) {
         self.eval(k, apply);
         if start <= l && r <= end {

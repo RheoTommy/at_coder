@@ -17,7 +17,6 @@ use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
-use num_integer::gcd;
 
 use crate::basic::*;
 use crate::lib::*;
@@ -28,40 +27,24 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let mut a = (0..n).map(|_| sc.next_uint()).collect::<Vec<_>>();
-    let mut ans = vec![];
-    ans.push(a.iter().fold(0, |i, j| gcd(i, *j)));
-
-    for k in (1..n).rev() {
-        let b = a.clone();
-        let mut g = (0, vec![]);
-        for i in 0..b.len() - 1 {
-            let mut c = vec![];
-            for j in 0..b.len() {
-                if i == j {
-                    c.push(b[j] + b[j + 1]);
-                } else if i + 1 == j {
-                    continue;
-                } else {
-                    c.push(b[j]);
-                }
-            }
-            let gi = c.iter().fold(0, |j, k| gcd(j, *k));
-            g = g.max((gi, c));
-        }
-        a = g.1;
-        ans.push(g.0);
-    }
-
-    for ai in ans.into_iter().rev() {
-        writeln!(writer, "{}", ai).unwrap();
-    }
+    let a = sc.next_uint();
+    let b = sc.next_uint();
+    let c = sc.next_uint();
+    let ans = if a > b {
+        "Takahashi"
+    } else if b > a {
+        "Aoki"
+    } else if c == 1 {
+        "Takahashi"
+    } else {
+        "Aoki"
+    };
+    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod basic {
-    pub const U_INF: usize = 1 << 60;
-    pub const I_INF: isize = 1 << 60;
+    pub const U_INF: u128 = 1 << 60;
+    pub const I_INF: i128 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,

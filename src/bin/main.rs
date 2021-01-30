@@ -27,22 +27,12 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_uint();
-    let mut v = vec![];
-    for _ in 0..n {
-        let a = sc.next_uint();
-        v.push(a);
-    }
-    let a = v.clone().into_iter().fold1(|a, b| a | b).unwrap();
-    let b = v.clone().into_iter().fold1(|a, b| a & b).unwrap();
-    let c = v.clone().into_iter().fold1(|a, b| a ^ b).unwrap();
-    writeln!(writer, "{} {} {}", a, b, c).unwrap();
-    writeln!(writer, "{:b} {:b} {:b}", a, b, c).unwrap();
+    
 }
 
 pub mod basic {
-    pub const U_INF: usize = 1 << 60;
-    pub const I_INF: isize = 1 << 60;
+    pub const U_INF: u128 = 1 << 60;
+    pub const I_INF: i128 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,

@@ -16,6 +16,7 @@
   - mod_int
   - util
   - eratosthenes
+  - num_type
 - structures
   - union_find
   - segment_tree

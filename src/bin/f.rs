@@ -13,43 +13,177 @@
 // ライブラリのコードはこちら → https://github.com/RheoTommy/at_coder
 // Twitterはこちら → https://twitter.com/RheoTommy
 
+use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
-use std::{collections::*, vec};
 
 use itertools::Itertools;
 
 use crate::basic::*;
 use crate::lib::*;
 
-pub mod lib {}
+pub mod lib {
+    /// セグ木にのせるMonoid
+    pub trait Monoid {
+        type Item: std::fmt::Debug + Clone;
+        /// 単位元
+        fn id() -> Self::Item;
+        /// 二項演算
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item;
+    }
+    pub struct SegTree<M: Monoid> {
+        data: Vec<M::Item>,
+        n: usize,
+    }
+    impl<M: Monoid> std::fmt::Debug for SegTree<M> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            let v = &self.data[self.n - 1..];
+            write!(f, "{:?}", v)
+        }
+    }
+    impl<M: Monoid> SegTree<M> {
+        /// すべて単位元で埋めた長さnのセグ木の生成
+        pub fn new(n: usize) -> Self {
+            let mut i = 1;
+            while i < n {
+                i *= 2;
+            }
+            let data = (0..2 * i - 1).map(|_| M::id()).collect::<Vec<_>>();
+            Self { data, n: i }
+        }
+        /// O(n)でスライスからセグ木を生成
+        pub fn from_slice(slice: &[M::Item]) -> Self {
+            let mut i = 1;
+            while i < slice.len() {
+                i *= 2;
+            }
+            let mut data = vec![M::id(); 2 * i - 1];
+            for j in 0..slice.len() {
+                data[j + i - 1] = slice[j].clone();
+            }
+            if slice.len() != 1 {
+                for j in (0..=(i - 2)).rev() {
+                    data[j] = M::op(&data[j * 2 + 1], &data[j * 2 + 2]);
+                }
+            }
+            Self { data, n: i }
+        }
+        /// 一点更新
+        pub fn set(&mut self, mut i: usize, x: M::Item) {
+            i += self.n - 1;
+            self.data[i] = x.clone();
+            while i > 0 {
+                i = (i - 1) / 2;
+                self.data[i] = M::op(&self.data[i * 2 + 1], &self.data[i * 2 + 2]);
+            }
+        }
+        /// 一点取得
+        pub fn get(&self, mut i: usize) -> &M::Item {
+            i += self.n - 1;
+            &self.data[i]
+        }
+        /// 区間クエリ
+        /// [l,r)の演算結果を求める
+        pub fn fold(&self, mut l: usize, mut r: usize) -> M::Item {
+            let mut l_ans = M::id();
+            let mut r_ans = M::id();
+            l += self.n - 1;
+            r += self.n - 1;
+            while l < r {
+                if l & 1 == 0 {
+                    l_ans = M::op(&l_ans, &self.data[l]);
+                }
+                if r & 1 == 0 {
+                    r_ans = M::op(&self.data[r - 1], &r_ans);
+                    r -= 2;
+                }
+                l >>= 1;
+                r >>= 1;
+            }
+            M::op(&l_ans, &r_ans)
+        }
+    }
+    pub struct Max;
+    pub struct Min;
+    pub struct Sum;
+    pub struct Mul;
+    pub struct Xor;
+    impl Monoid for Max {
+        type Item = i128;
+        fn id() -> Self::Item {
+            std::i128::MIN
+        }
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+            *a.max(b)
+        }
+    }
+    impl Monoid for Min {
+        type Item = i128;
+        fn id() -> Self::Item {
+            std::i128::MAX
+        }
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+            *a.min(b)
+        }
+    }
+    impl Monoid for Sum {
+        type Item = i128;
+        fn id() -> Self::Item {
+            0
+        }
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+            a + b
+        }
+    }
+    impl Monoid for Mul {
+        type Item = i128;
+        fn id() -> Self::Item {
+            1
+        }
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+            a * b
+        }
+    }
+    impl Monoid for Xor {
+        type Item = i128;
+        fn id() -> Self::Item {
+            0
+        }
+        fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
+            a ^ b
+        }
+    }
+    pub type MaxSegTree = SegTree<Max>;
+    pub type MinSegTree = SegTree<Min>;
+    pub type SumSegTree = SegTree<Sum>;
+    pub type MulSegTree = SegTree<Mul>;
+    pub type XorSegTree = SegTree<Xor>;
+}
 
 fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let k = sc.next_usize();
-    let s = (0..k).map(|_| sc.next_chars()).collect::<Vec<_>>();
-    let n = s[0].len();
-    let mut dp = vec![vec![0; n]; n];
-    for si in s {
-        for i in 0..n {
-            for j in i + 1..n {
-                if si[i] == si[j] {
-                    dp[i][j] += 1;
-                    dp[j][i] += 1;
-                }
-            }
-        }
+    let n = sc.next_usize();
+    let a = (0..n).map(|_| sc.next_usize()).collect::<Vec<_>>();
+    let mut st = SumSegTree::new(n);
+    let mut x = 0;
+    for i in 0..n {
+        let ai = a[i];
+        x += st.fold(ai, n);
+        st.set(ai, 1);
     }
-
-    for dpi in dp {
-        eprintln!("{:?}", dpi);
+    writeln!(writer, "{}", x).unwrap();
+    for k in 1..n {
+        let ki = a[k - 1];
+        x -= ki as i128 ;
+        x += (n - ki - 1) as i128;
+        writeln!(writer, "{}", x).unwrap();
     }
 }
 
 pub mod basic {
-    pub const U_INF: usize = 1 << 60;
-    pub const I_INF: isize = 1 << 60;
+    pub const U_INF: u128 = 1 << 60;
+    pub const I_INF: i128 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
