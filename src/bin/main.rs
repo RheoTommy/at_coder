@@ -14,7 +14,7 @@
 // Twitterはこちら → https://twitter.com/RheoTommy
 
 use std::collections::*;
-use std::io::{BufWriter, stdout, Write};
+use std::io::{stdout, BufWriter, Write};
 
 use itertools::Itertools;
 
@@ -28,8 +28,7 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
     let n = sc.next_usize();
-    let k = sc.next_int();
-    let m = sc.next_uint();
+    writeln!(writer, "{}", n).unwrap();
 }
 
 pub mod basic {

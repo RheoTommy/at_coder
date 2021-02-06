@@ -16,96 +16,16 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
-use itertools::Itertools;
-
 use crate::basic::*;
 use crate::lib::*;
 
-pub mod lib {
-    pub fn compress<T: std::hash::Hash + Clone + std::cmp::Ord + std::cmp::Eq>(
-        v: &[T],
-    ) -> (Vec<T>, std::collections::HashMap<T, usize>) {
-        let mut v = v.iter().collect::<Vec<_>>();
-        v.sort();
-        v.dedup();
-        let mut res = std::collections::HashMap::new();
-        let mut zip = Vec::with_capacity(v.len());
-        for (i, vi) in v.into_iter().enumerate() {
-            zip.push(vi.clone());
-            res.insert(vi.clone(), i);
-        }
-        (zip, res)
-    }
-}
+pub mod lib {}
 
 fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let m = sc.next_usize();
-    let mut vertexes = vec![vec![]; n];
-    for _ in 0..m {
-        let a = sc.next_usize() - 1;
-        let b = sc.next_usize() - 1;
-        vertexes[a].push(b);
-        vertexes[b].push(a);
-    }
-    let k = sc.next_usize();
-    let c = (0..k).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
-    let (zipped, index) = compress(&c);
-    let mut distance = vec![vec![U_INF; k]; k];
-    for i in 0..k {
-        let mut seen = vec![false; n];
-        let mut dp = vec![U_INF; n];
-        let mut queue = VecDeque::new();
-        dp[zipped[i]] = 0;
-        queue.push_back((0, zipped[i]));
-        seen[zipped[i]] = true;
-        while let Some((cost, i)) = queue.pop_front() {
-            for &j in &vertexes[i] {
-                if seen[j] {
-                    continue;
-                }
-                seen[j] = true;
-                dp[j] = cost + 1;
-                queue.push_back((cost + 1, j));
-            }
-        }
 
-        for j in 0..k {
-            distance[i][j] = dp[zipped[j]];
-        }
-    }
-    // dbg!(&distance);
-
-    let mut dp = vec![vec![U_INF; k]; 1 << k];
-    for &ci in &c {
-        dp[1 << index[&ci]][index[&ci]] = 0;
-    }
-    for bit in 0..1 << k {
-        for i in 0..k {
-            if bit >> i & 1 == 0 {
-                continue;
-            }
-            for j in 0..k {
-                if bit >> j & 1 == 1 {
-                    continue;
-                }
-                dp[bit | 1 << j][j] = dp[bit | 1 << j][j].min(dp[bit][i] + distance[i][j]);
-            }
-        }
-    }
-
-    let mut ans = U_INF;
-    for i in 0..k {
-        ans = ans.min(dp[(1 << k) - 1][i]);
-    }
-    if ans == U_INF {
-        writeln!(writer, "{}", -1).unwrap();
-    } else {
-        writeln!(writer, "{}", ans + 1).unwrap();
-    }
 }
 
 pub mod basic {

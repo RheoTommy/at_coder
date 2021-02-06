@@ -16,8 +16,6 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
-use itertools::Itertools;
-
 use crate::basic::*;
 use crate::lib::*;
 
@@ -27,37 +25,7 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_int() * 2;
 
-    let mut cnt = 0;
-    for i in 1.. {
-        if i * i > n {
-            break;
-        }
-        if n % i != 0 {
-            continue;
-        }
-        let j = n / i;
-
-        {
-            let l = (i + j - 1) / 2;
-            let k = i - l;
-            if (k + l) * (l - k + 1) == n {
-                cnt += 1;
-            }
-        }
-        {
-            let i = -i;
-            let j = -j;
-            let l = (i + j - 1) / 2;
-            let k = i - l;
-            if (k + l) * (l - k + 1) == n {
-                cnt += 1;
-            }
-        }
-    }
-
-    writeln!(writer, "{}", cnt).unwrap();
 }
 
 pub mod basic {

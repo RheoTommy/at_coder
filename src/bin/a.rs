@@ -16,8 +16,6 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
-use itertools::Itertools;
-
 use crate::basic::*;
 use crate::lib::*;
 
@@ -27,19 +25,19 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let a = sc.next_uint();
-    let b = sc.next_uint();
-    let c = sc.next_uint();
-    let ans = if a > b {
-        "Takahashi"
-    } else if b > a {
-        "Aoki"
-    } else if c == 1 {
-        "Takahashi"
-    } else {
-        "Aoki"
-    };
-    writeln!(writer, "{}", ans).unwrap();
+    let t = sc.next_int();
+    for _ in 0..t {
+        let x = sc.next_int();
+        let y = sc.next_int();
+        let s = sc.next_chars();
+        let up = s.iter().filter(|ci| **ci == 'U').count() as i128;
+        let down = s.iter().filter(|ci| **ci == 'D').count() as i128;
+        let right = s.iter().filter(|ci| **ci == 'R').count() as i128;
+        let left = s.iter().filter(|ci| **ci == 'L').count() as i128;
+
+        let ans = if (-left..=right).contains(&x) && (-down..=up).contains(&y) { "YES" } else { "NO" };
+        writeln!(writer, "{}", ans).unwrap();
+    }
 }
 
 pub mod basic {

@@ -16,8 +16,6 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
-use itertools::Itertools;
-
 use crate::basic::*;
 use crate::lib::*;
 
@@ -27,30 +25,63 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let m = sc.next_usize();
-    let f = (0..m)
-        .map(|_| (sc.next_usize() - 1, sc.next_usize() - 1))
-        .collect::<Vec<_>>();
-    let k = sc.next_usize();
-    let cd = (0..k)
-        .map(|_| (sc.next_usize() - 1, sc.next_usize() - 1))
-        .collect::<Vec<_>>();
+    let t = sc.next_uint();
+    'test: for _ in 0..t {
+        let n = sc.next_usize();
+        let m = sc.next_usize();
+        let a = (0..n).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
+        let b = (0..n).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
+        let c = (0..m).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
 
-    let mut ans = 0;
-    for bit in 0..1 << k {
-        let mut v = vec![false; n];
-        for i in 0..k {
-            if bit >> i & 1 == 0 {
-                v[cd[i].0] = true;
-            } else {
-                v[cd[i].1] = true;
+        let mut last = U_INF as usize;
+        for i in 0..n {
+            if b[i] == c[m - 1] {
+                last = i;
+                break;
             }
         }
-        let t = f.iter().filter(|(i, j)| v[*i] && v[*j]).count();
-        ans = ans.max(t);
+
+        if last == U_INF as usize {
+            writeln!(writer, "{}", "NO").unwrap();
+            continue 'test;
+        }
+
+        let mut need = vec![VecDeque::new(); n];
+        for i in 0..n {
+            if a[i] != b[i] {
+                need[b[i]].push_back(i);
+                if b[i] == c[m - 1] {
+                    last = i;
+                }
+            }
+        }
+
+        let mut have = vec![0; n];
+        for i in 0..m {
+            have[c[i]] += 1;
+        }
+
+        for i in 0..n {
+            if need[i].len() > have[i] {
+                writeln!(writer, "{}", "NO").unwrap();
+                continue 'test;
+            }
+        }
+
+        writeln!(writer, "{}", "YES").unwrap();
+        for &ci in &c {
+            write!(
+                writer,
+                "{} ",
+                match need[ci].pop_front() {
+                    None => last + 1,
+                    Some(i) => i + 1,
+                }
+            )
+            .unwrap();
+        }
+        writeln!(writer).unwrap();
     }
-    writeln!(writer, "{}", ans).unwrap();
 }
 
 pub mod basic {
