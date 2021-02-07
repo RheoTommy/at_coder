@@ -124,3 +124,24 @@ pub fn primes(mut n: u128) -> std::collections::HashMap<u128, u128> {
     }
     res
 }
+
+#[snippet("math_util")]
+pub fn float_to_int(s: &[char], x: u32) -> i128 {
+    if !s.contains(&'.') {
+        return s.iter().collect::<String>().parse::<i128>().unwrap() * 10i128.pow(x);
+    }
+
+    let n = s.len();
+    let i = s.iter().find_position(|ci| **ci == '.').unwrap().0;
+    let l = n - i - 1;
+    let t = s
+        .iter()
+        .skip_while(|ci| **ci == '0')
+        .filter(|ci| **ci != '.')
+        .collect::<String>()
+        .parse::<i128>()
+        .unwrap()
+        * 10i128.pow(x - l as u32);
+
+    t
+}

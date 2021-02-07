@@ -16,8 +16,11 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
+use itertools::Itertools;
+
 use crate::basic::*;
 use crate::lib::*;
+use num::integer::Roots;
 
 pub mod lib {}
 
@@ -25,7 +28,65 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
+    let n = sc.next_usize();
+    let a = (0..n)
+        .map(|_| to_int(&sc.next_chars()))
+        .map(|i| (f(i), g(i)))
+        .collect::<Vec<_>>();
 
+    let mut dp = vec![vec![0i128; 50]; 50];
+    for &(ai, bi) in &a {
+        dp[ai as usize][bi as usize] += 1;
+    }
+
+    let mut cnt = 0;
+    for i in 0..50 {
+        for j in 0..50 {
+            for k in 0..50 {
+                for l in 0..50 {
+                    if i + k < 18 || j + l < 18 {
+                        continue;
+                    }
+                    if (i, j) == (k, l) {
+                        continue;
+                    }
+                    cnt += dp[i][j] * dp[k][l];
+                }
+            }
+        }
+    }
+
+    cnt /= 2;
+
+    let mut cnt2 = 0;
+    for i in 0..50 {
+        for j in 0..50 {
+            if i + i < 18 || j + j < 18 || dp[i][j] == 0 {
+                continue;
+            }
+
+            cnt2 += dp[i][j] * (dp[i][j] - 1) / 2;
+        }
+    }
+
+    writeln!(writer, "{}", cnt + cnt2).unwrap();
+}
+
+
+
+fn f(x: i128) -> i128 {
+    if x % 5 != 0 {
+        0
+    } else {
+        1 + f(x / 5)
+    }
+}
+fn g(x: i128) -> i128 {
+    if x % 2 != 0 {
+        0
+    } else {
+        1 + g(x / 2)
+    }
 }
 
 pub mod basic {

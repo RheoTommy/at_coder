@@ -16,6 +16,8 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
+use itertools::Itertools;
+
 use crate::basic::*;
 use crate::lib::*;
 
@@ -25,33 +27,10 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let t = sc.next_uint();
-    for _ in 0..t {
-        let n = sc.next_usize();
-        let k = sc.next_uint();
-
-        let mut h = (0..n).map(|_| sc.next_uint()).collect::<Vec<_>>();
-        let sum = h.iter().sum::<u128>();
-        let max = h.iter().max().unwrap() * n as u128;
-
-        let mut log = Vec::new();
-        log.push(0);
-        'outer: for _ in 1..=(max - sum) {
-            for j in 1..n {
-                if h[j - 1] < h[j] {
-                    log.push(j);
-                    h[j - 1] += 1;
-                    continue 'outer;
-                }
-            }
-        }
-
-        if k < log.len() as u128 {
-            writeln!(writer, "{}", log[k as usize]).unwrap();
-        } else {
-            writeln!(writer, "{}", -1).unwrap();
-        }
-    }
+    let n = sc.next_usize();
+    let x = sc.next_int();
+    let a = (0..n).map(|_| sc.next_int()).collect::<Vec<_>>();
+    writeln!(writer, "{}", a.into_iter().filter(|ai| *ai != x).join(" ")).unwrap();
 }
 
 pub mod basic {

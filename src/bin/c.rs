@@ -16,6 +16,8 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
+use itertools::Itertools;
+
 use crate::basic::*;
 use crate::lib::*;
 
@@ -25,63 +27,92 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let t = sc.next_uint();
-    'test: for _ in 0..t {
-        let n = sc.next_usize();
-        let m = sc.next_usize();
-        let a = (0..n).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
-        let b = (0..n).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
-        let c = (0..m).map(|_| sc.next_usize() - 1).collect::<Vec<_>>();
+    let h = sc.next_usize();
+    let w = sc.next_usize();
+    let s = (0..h).map(|_| sc.next_chars()).collect::<Vec<_>>();
 
-        let mut last = U_INF as usize;
-        for i in 0..n {
-            if b[i] == c[m - 1] {
-                last = i;
-                break;
+    let mut cnt = 0;
+    // 左上角
+    for i in 1..h {
+        for j in 1..w {
+            match (s[i - 1][j - 1], s[i - 1][j], s[i][j - 1], s[i][j]) {
+                ('.', '.', '.', '#') => cnt += 1,
+                _ => (),
             }
         }
-
-        if last == U_INF as usize {
-            writeln!(writer, "{}", "NO").unwrap();
-            continue 'test;
-        }
-
-        let mut need = vec![VecDeque::new(); n];
-        for i in 0..n {
-            if a[i] != b[i] {
-                need[b[i]].push_back(i);
-                if b[i] == c[m - 1] {
-                    last = i;
-                }
-            }
-        }
-
-        let mut have = vec![0; n];
-        for i in 0..m {
-            have[c[i]] += 1;
-        }
-
-        for i in 0..n {
-            if need[i].len() > have[i] {
-                writeln!(writer, "{}", "NO").unwrap();
-                continue 'test;
-            }
-        }
-
-        writeln!(writer, "{}", "YES").unwrap();
-        for &ci in &c {
-            write!(
-                writer,
-                "{} ",
-                match need[ci].pop_front() {
-                    None => last + 1,
-                    Some(i) => i + 1,
-                }
-            )
-            .unwrap();
-        }
-        writeln!(writer).unwrap();
     }
+
+    // 右上角
+    for i in 1..h {
+        for j in 0..w - 1 {
+            match (s[i - 1][j], s[i - 1][j + 1], s[i][j], s[i][j + 1]) {
+                ('.', '.', '#', '.') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 左下角
+    for i in 0..h - 1 {
+        for j in 1..w {
+            match (s[i][j - 1], s[i][j], s[i + 1][j - 1], s[i + 1][j]) {
+                ('.', '#', '.', '.') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 右下角
+    for i in 0..h - 1 {
+        for j in 0..w - 1 {
+            match (s[i][j], s[i][j + 1], s[i + 1][j], s[i + 1][j + 1]) {
+                ('#', '.', '.', '.') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 左上角
+    for i in 1..h {
+        for j in 1..w {
+            match (s[i - 1][j - 1], s[i - 1][j], s[i][j - 1], s[i][j]) {
+                ('#', '#', '#', '.') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 右上角
+    for i in 1..h {
+        for j in 0..w - 1 {
+            match (s[i - 1][j], s[i - 1][j + 1], s[i][j], s[i][j + 1]) {
+                ('#', '#', '.', '#') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 左下角
+    for i in 0..h - 1 {
+        for j in 1..w {
+            match (s[i][j - 1], s[i][j], s[i + 1][j - 1], s[i + 1][j]) {
+                ('#', '.', '#', '#') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    // 右下角
+    for i in 0..h - 1 {
+        for j in 0..w - 1 {
+            match (s[i][j], s[i][j + 1], s[i + 1][j], s[i + 1][j + 1]) {
+                ('.', '#', '#', '#') => cnt += 1,
+                _ => (),
+            }
+        }
+    }
+
+    writeln!(writer, "{}", cnt).unwrap();
 }
 
 pub mod basic {

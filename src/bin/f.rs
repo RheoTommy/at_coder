@@ -16,6 +16,8 @@
 use std::collections::*;
 use std::io::{stdout, BufWriter, Write};
 
+use itertools::Itertools;
+
 use crate::basic::*;
 use crate::lib::*;
 
@@ -25,7 +27,6 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-
 }
 
 pub mod basic {
