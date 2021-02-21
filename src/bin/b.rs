@@ -27,10 +27,7 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let x = sc.next_int();
-    let a = (0..n).map(|_| sc.next_int()).collect::<Vec<_>>();
-    writeln!(writer, "{}", a.into_iter().filter(|ai| *ai != x).join(" ")).unwrap();
+
 }
 
 pub mod basic {

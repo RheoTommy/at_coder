@@ -58,7 +58,7 @@ pub struct Add;
 pub struct Xor;
 #[snippet("bit")]
 impl Monoid for Add {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
         0
@@ -74,7 +74,7 @@ impl Monoid for Add {
 }
 #[snippet("bit")]
 impl Monoid for Xor {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
         0

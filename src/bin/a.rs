@@ -27,16 +27,7 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let v = sc.next_int();
-    let t = sc.next_int();
-    let s = sc.next_int();
-    let d = sc.next_int();
-    let ans = if !(v * t..=v * s).contains(&d) {
-        "Yes"
-    } else {
-        "No"
-    };
-    writeln!(writer, "{}", ans).unwrap();
+
 }
 
 pub mod basic {

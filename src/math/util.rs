@@ -2,7 +2,7 @@ use super::num_type::{GCDIdent, MulDivIdent};
 use cargo_snippet::snippet;
 
 #[snippet("math_util")]
-pub fn pow<T: std::ops::Mul<Output = T> + MulDivIdent + Copy>(x: T, n: u128) -> T {
+pub fn pow<T: std::ops::Mul<Output = T> + MulDivIdent + Copy>(x: T, n: u64) -> T {
     if n == 0 {
         T::mul_div_ident()
     } else if n == 1 {
@@ -17,7 +17,7 @@ pub fn pow<T: std::ops::Mul<Output = T> + MulDivIdent + Copy>(x: T, n: u128) -> 
 #[snippet("math_util")]
 pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + MulDivIdent + Copy>(
     x: T,
-    n: u128,
+    n: u64,
     m: T,
 ) -> T {
     if n == 0 {
@@ -41,7 +41,7 @@ pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T,
 }
 
 #[snippet("math_util")]
-pub fn ext_gcd(a: i128, b: i128) -> (i128, i128, i128) {
+pub fn ext_gcd(a: i64, b: i64) -> (i64, i64, i64) {
     if a < b {
         let (g, y, x) = ext_gcd(b, a);
         return (g, x, y);
@@ -72,7 +72,7 @@ pub fn lcm<
 
 /// O(√N)
 #[snippet("math_util")]
-pub fn divisors(n: u128) -> Vec<u128> {
+pub fn divisors(n: u64) -> Vec<u64> {
     let mut res = Vec::new();
     for i in 1.. {
         if i * i > n {
@@ -90,7 +90,7 @@ pub fn divisors(n: u128) -> Vec<u128> {
 
 /// O(√N)
 #[snippet("math_util")]
-pub fn is_prime(n: u128) -> bool {
+pub fn is_prime(n: u64) -> bool {
     for i in 2.. {
         if i * i > n {
             break;
@@ -104,8 +104,8 @@ pub fn is_prime(n: u128) -> bool {
 
 /// O(√N)
 #[snippet("math_util")]
-pub fn primes(mut n: u128) -> std::collections::HashMap<u128, u128> {
-    let mut res = std::collections::HashMap::new();
+pub fn primes(mut n: u64) -> std::collections::BTreeMap<u64, u64> {
+    let mut res = std::collections::BTreeMap::new();
     for i in 2.. {
         if i * i > n {
             break;
@@ -124,24 +124,30 @@ pub fn primes(mut n: u128) -> std::collections::HashMap<u128, u128> {
     }
     res
 }
-
+//
 #[snippet("math_util")]
-pub fn float_to_int(s: &[char], x: u32) -> i128 {
+pub fn float_to_int(s: &[char], x: u32) -> i64 {
     if !s.contains(&'.') {
-        return s.iter().collect::<String>().parse::<i128>().unwrap() * 10i128.pow(x);
+        return s.iter().collect::<String>().parse::<i64>().unwrap() * 10i64.pow(x);
     }
 
     let n = s.len();
-    let i = s.iter().find_position(|ci| **ci == '.').unwrap().0;
+    let i = s
+        .iter()
+        .enumerate()
+        .filter(|(_, ci)| **ci == '.')
+        .next()
+        .unwrap()
+        .0;
     let l = n - i - 1;
     let t = s
         .iter()
         .skip_while(|ci| **ci == '0')
         .filter(|ci| **ci != '.')
         .collect::<String>()
-        .parse::<i128>()
+        .parse::<i64>()
         .unwrap()
-        * 10i128.pow(x - l as u32);
+        * 10i64.pow(x - l as u32);
 
     t
 }

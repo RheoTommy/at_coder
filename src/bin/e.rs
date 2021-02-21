@@ -27,48 +27,7 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-    let n = sc.next_usize();
-    let m = sc.next_usize();
-    let mut vertex = vec![BTreeMap::new(); n];
-    for _ in 0..m {
-        let ai = sc.next_usize() - 1;
-        let bi = sc.next_usize() - 1;
-        let ci = sc.next_uint();
 
-        if vertex[ai].get(&bi).unwrap_or(&U_INF) < &ci {
-            continue;
-        }
-
-        vertex[ai].remove(&bi);
-        vertex[ai].insert(bi, ci);
-    }
-
-    for i in 0..n {
-        let mut dp = vec![U_INF; n];
-        let mut queue = BinaryHeap::new();
-        queue.push((U_INF, 0, i));
-        while let Some((_, cost, now)) = queue.pop() {
-            if dp[now] < cost {
-                continue;
-            }
-
-            'inner: for (&bi, &ci) in &vertex[now] {
-                let next = cost + ci;
-                if bi == i {
-                    dp[i] = (dp[i]).min(next);
-                    continue 'inner;
-                }
-
-                if dp[bi] > next {
-                    dp[bi] = next;
-                    queue.push((U_INF - next, next, bi));
-                }
-            }
-        }
-
-        let ans = if dp[i] == U_INF { -1 } else { dp[i] as i128 };
-        writeln!(writer, "{}", ans).unwrap();
-    }
 }
 
 pub mod basic {

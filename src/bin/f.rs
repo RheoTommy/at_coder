@@ -27,6 +27,7 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
+
 }
 
 pub mod basic {

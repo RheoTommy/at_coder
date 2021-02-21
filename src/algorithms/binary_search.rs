@@ -42,7 +42,7 @@ impl<T> BinarySearch<T> for [T] {
 }
 
 #[snippet("binary_search")]
-pub fn lower_bound(l: i128, r: i128, f: impl Fn(i128) -> bool) -> i128 {
+pub fn lower_bound(l: i64, r: i64, f: impl Fn(i64) -> bool) -> i64 {
     let mut left = l;
     let mut right = r;
     while right - left > 1 {

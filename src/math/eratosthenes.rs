@@ -37,9 +37,9 @@ impl Eratosthenes {
     }
 
     /// 素因数分解O(log N)
-    pub fn factorization(&self, i: usize) -> std::collections::HashMap<usize, usize> {
+    pub fn factorization(&self, i: usize) -> std::collections::BTreeMap<usize, usize> {
         assert_ne!(i, 0);
-        let mut map = std::collections::HashMap::new();
+        let mut map = std::collections::BTreeMap::new();
         let mut now = i;
         while now != 1 {
             let p = self.min_prime[now];
@@ -50,10 +50,10 @@ impl Eratosthenes {
     }
 
     /// 最大公約数O((log N)^2)
-    pub fn gcd(&self, i: usize, j: usize) -> std::collections::HashMap<usize, usize> {
+    pub fn gcd(&self, i: usize, j: usize) -> std::collections::BTreeMap<usize, usize> {
         assert_ne!(i, 0);
         assert_ne!(j, 0);
-        let mut map = std::collections::HashMap::new();
+        let mut map = std::collections::BTreeMap::new();
         let im = self.factorization(i);
         let jm = self.factorization(j);
         for (k, v) in im {
@@ -65,10 +65,10 @@ impl Eratosthenes {
     }
 
     /// 最小公倍数O((log N)^2)
-    pub fn lcm(&self, i: usize, j: usize) -> std::collections::HashMap<usize, usize> {
+    pub fn lcm(&self, i: usize, j: usize) -> std::collections::BTreeMap<usize, usize> {
         assert_ne!(i, 0);
         assert_ne!(j, 0);
-        let mut map = std::collections::HashMap::new();
+        let mut map = std::collections::BTreeMap::new();
         let im = self.factorization(i);
         let jm = self.factorization(j);
         for (&k, &v) in &im {

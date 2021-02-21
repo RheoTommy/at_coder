@@ -33,7 +33,7 @@ impl ModInt {
 
     /// べき乗計算関数
     /// 二分累乗法を用いるため、計算量はO(log n)
-    pub fn pow(self, n: u128) -> Self {
+    pub fn pow(self, n: u64) -> Self {
         match n {
             0 => ModInt::new_inner(1),
             1 => self,
@@ -45,7 +45,7 @@ impl ModInt {
     /// 逆元を返す
     /// フェルマーの小定理より、べき乗を用いて計算するため、計算量はO(log MOD)
     pub fn inv(self) -> Self {
-        self.pow((MOD - 2) as u128)
+        self.pow((MOD - 2) as u64)
     }
 }
 
@@ -60,7 +60,7 @@ impl std::fmt::Display for ModInt {
 impl<T: Into<Num>> From<T> for ModInt {
     fn from(t: T) -> Self {
         let n: Num = t.into();
-        Self::new_inner((n.0 % MOD as i128) as i32)
+        Self::new_inner((n.0 % MOD as i64) as i32)
     }
 }
 
@@ -118,9 +118,9 @@ impl<T: Into<ModInt>> std::ops::Mul<T> for ModInt {
 
     fn mul(self, rhs: T) -> Self::Output {
         let rhs: ModInt = rhs.into();
-        let mut tmp = self.value as i128 * rhs.value as i128;
-        if tmp >= MOD as i128 {
-            tmp %= MOD as i128;
+        let mut tmp = self.value as i64 * rhs.value as i64;
+        if tmp >= MOD as i64 {
+            tmp %= MOD as i64;
         }
 
         Self { value: tmp as i32 }

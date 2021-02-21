@@ -105,10 +105,10 @@ pub struct Mul;
 pub struct Xor;
 #[snippet("seg_tree")]
 impl Monoid for Max {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
-        std::i128::MIN
+        std::i64::MIN / 2
     }
 
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
@@ -117,10 +117,10 @@ impl Monoid for Max {
 }
 #[snippet("seg_tree")]
 impl Monoid for Min {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
-        std::i128::MAX
+        std::i64::MAX / 2
     }
 
     fn op(a: &Self::Item, b: &Self::Item) -> Self::Item {
@@ -129,7 +129,7 @@ impl Monoid for Min {
 }
 #[snippet("seg_tree")]
 impl Monoid for Sum {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
         0
@@ -141,7 +141,7 @@ impl Monoid for Sum {
 }
 #[snippet("seg_tree")]
 impl Monoid for Mul {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
         1
@@ -153,7 +153,7 @@ impl Monoid for Mul {
 }
 #[snippet("seg_tree")]
 impl Monoid for Xor {
-    type Item = i128;
+    type Item = i64;
 
     fn id() -> Self::Item {
         0

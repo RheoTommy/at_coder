@@ -60,7 +60,7 @@ pub trait XorIdent {
 #[snippet("math_util")]
 #[snippet("mod_int")]
 #[snippet("lis")]
-pub struct Num(pub i128);
+pub struct Num(pub i64);
 
 #[snippet("math_util")]
 #[snippet("mod_int")]
@@ -86,7 +86,7 @@ macro_rules! impl_num_into {
     ($($t:ty),*) => {$(
         impl Into<Num> for $t {
             fn into(self) -> Num {
-                Num(self as i128)
+                Num(self as i64)
             }
         }
     )*};
