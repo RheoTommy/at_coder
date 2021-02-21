@@ -8,3 +8,5 @@ pub mod lis;
 pub mod lcs;
 /// ランレングス圧縮
 pub mod rle;
+/// zアルゴ
+mod z_algo;
