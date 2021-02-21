@@ -1,3 +1,6 @@
+use cargo_snippet::snippet;
+
+#[snippet("z_algo")]
 pub fn z_algo<T: Eq>(s: &[T]) -> Vec<usize> {
     let n = s.len();
     let mut a = vec![0; n];
