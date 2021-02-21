@@ -31,8 +31,8 @@ fn main() {
 }
 
 pub mod basic {
-    pub const U_INF: u128 = 1 << 60;
-    pub const I_INF: i128 = 1 << 60;
+    pub const U_INF: u64 = 1 << 60;
+    pub const I_INF: i64 = 1 << 60;
 
     pub struct Scanner {
         buf: std::collections::VecDeque<String>,
@@ -81,11 +81,11 @@ pub mod basic {
             self.next()
         }
 
-        pub fn next_int(&mut self) -> i128 {
+        pub fn next_int(&mut self) -> i64 {
             self.next()
         }
 
-        pub fn next_uint(&mut self) -> u128 {
+        pub fn next_uint(&mut self) -> u64 {
             self.next()
         }
 
