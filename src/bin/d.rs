@@ -28,6 +28,79 @@ fn main() {
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
 
+    let k = sc.next_usize();
+    let s = sc.next_chars();
+    let t = sc.next_chars();
+
+    let mut cards = vec![k; 9];
+    for &si in &s {
+        if si == '#' {
+            break;
+        }
+        cards[si.to_digit(10).unwrap() as usize - 1] -= 1;
+    }
+    for &si in &t {
+        if si == '#' {
+            break;
+        }
+        cards[si.to_digit(10).unwrap() as usize - 1] -= 1;
+    }
+
+    let mut win = 0;
+
+    let mut tak = BTreeMap::new();
+    let mut aok = BTreeMap::new();
+    for &si in &s {
+        if si == '#' {
+            break;
+        }
+        *tak.entry(si.to_digit(10).unwrap() as usize).or_insert(0) += 1;
+    }
+    for &ti in &t {
+        if ti == '#' {
+            break;
+        }
+        *aok.entry(ti.to_digit(10).unwrap() as usize).or_insert(0) += 1;
+    }
+    for i in 1..=9{
+        tak.entry(i).or_insert(0);
+        aok.entry(i).or_insert(0);
+    }
+    // writeln!(writer, "{:?}", score(&tak));
+    // writeln!(writer, "{:?}", score(&aok));
+
+    let mut ans = 0.0;
+
+    for i in 0..9 {
+        for j in 0..9 {
+            let pos = cards[i]
+                * if i == j {
+                    cards[i].saturating_sub(1)
+                } else {
+                    cards[j]
+                };
+            *tak.entry(i + 1).or_insert(0) += 1;
+            *aok.entry(j + 1).or_insert(0) += 1;
+            let ta = score(&tak);
+            let ao = score(&aok);
+            *tak.entry(i + 1).or_insert(0) -= 1;
+            *aok.entry(j + 1).or_insert(0) -= 1;
+            if ta > ao {
+                win += pos;
+            }
+        }
+    }
+    let sum = 9 * k - 8;
+    // writeln!(writer, "{}", ans).unwrap();
+    writeln!(writer, "{}", win as f64 / (sum * (sum - 1)) as f64).unwrap();
+}
+
+fn score(m: &BTreeMap<usize, usize>) -> usize {
+    let mut sum = 0;
+    for (k, v) in m {
+        sum += *k * 10usize.pow(*v as u32);
+    }
+    sum
 }
 
 pub mod basic {

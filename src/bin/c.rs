@@ -27,7 +27,25 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
+    let n = sc.next_uint();
+    let mut sum = 0;
+    let mut map = BTreeSet::new();
+    for i in 2.. {
+        if i * i > n {
+            break;
+        }
+        if map.contains(&i) {
+            continue;
+        }
+        let mut j = i * i;
+        while j <= n {
+            sum += 1;
+            map.insert(j);
+            j *= i;
+        }
+    }
 
+    writeln!(writer, "{}", n - sum).unwrap();
 }
 
 pub mod basic {

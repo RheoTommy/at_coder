@@ -20,6 +20,8 @@ use itertools::Itertools;
 
 use crate::basic::*;
 use crate::lib::*;
+use rand::rngs::ThreadRng;
+use rand::Rng;
 
 pub mod lib {}
 
@@ -27,26 +29,17 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
-
-    let n = sc.next_usize();
-    let k = sc.next_usize();
-
-    for m in 1..n {
-        let mm = m * (m - 1) / 2;
-        let l = n - m - 1;
-        if mm + l == k {
-            writeln!(writer, "{}", m + l).unwrap();
-            for j in 1..=m {
-                writeln!(writer, "1 {}", j + 1).unwrap();
-            }
-            for l in 1..=l {
-                let l = l + 1 + m;
-                writeln!(writer, "{} {}", l - 1, l).unwrap();
-            }
-            return;
-        }
-    }
-    writeln!(writer, "{}", -1).unwrap();
+    let mut rng = ThreadRng::default();
+    writeln!(
+        writer,
+        "{} {} {} {} {}",
+        1,
+        rng.gen_range(0, 500),
+        rng.gen_range(0, 500),
+        rng.gen_range(0, 500),
+        rng.gen_range(0, 500)
+    )
+    .unwrap();
 }
 
 pub mod basic {

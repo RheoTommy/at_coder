@@ -27,7 +27,28 @@ fn main() {
     let out = stdout();
     let mut writer = BufWriter::new(out.lock());
     let mut sc = Scanner::new();
+    let n = sc.next_usize();
+    let mut a = Vec::new();
+    let mut p = Vec::new();
+    let mut x = Vec::new();
+    for _ in 0..n {
+        a.push(sc.next_usize());
+        p.push(sc.next_usize());
+        x.push(sc.next_usize());
+    }
 
+    let mut min = U_INF as usize;
+    for i in 0..n {
+        if a[i] < x[i] {
+            min = (min).min(p[i]);
+        }
+    }
+
+    if min >= U_INF as usize {
+        writeln!(writer, "{}", -1).unwrap();
+    } else {
+        writeln!(writer, "{}", min).unwrap();
+    }
 }
 
 pub mod basic {

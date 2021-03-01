@@ -42,16 +42,15 @@ pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T,
 
 #[snippet("math_util")]
 pub fn ext_gcd(a: i64, b: i64) -> (i64, i64, i64) {
-    if a < b {
-        let (g, y, x) = ext_gcd(b, a);
-        return (g, x, y);
-    }
     if b == 0 {
-        return (a, 1, 0);
+        if a < 0 {
+            return (-a, -1, 0);
+        } else {
+            return (a, 1, 0);
+        }
     }
-
-    let (g, x, y) = ext_gcd(b, a % b);
-    (g, y, x - a / b * y)
+    let (g, s, t) = ext_gcd(b, a % b);
+    return (g, t, s - (a / b) * t);
 }
 
 #[snippet("math_util")]
