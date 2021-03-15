@@ -32,7 +32,10 @@ pub fn mod_pow<T: std::ops::Mul<Output = T> + std::ops::Rem<Output = T> + MulDiv
 }
 
 #[snippet("math_util")]
-pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(a: T, b: T) -> T {
+pub fn gcd<T: GCDIdent + std::ops::Rem<Output = T> + Copy + std::cmp::Ord>(
+    a: T,
+    b: T,
+) -> T {
     if b == T::gcd_ident() {
         a
     } else {
